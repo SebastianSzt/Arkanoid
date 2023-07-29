@@ -48,13 +48,12 @@
             // 
             GamePanel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             GamePanel.BackColor = System.Drawing.Color.FromArgb(35, 35, 35);
-            GamePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            GamePanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             GamePanel.Location = new System.Drawing.Point(29, 127);
             GamePanel.Margin = new System.Windows.Forms.Padding(20, 40, 20, 40);
             GamePanel.Name = "GamePanel";
             GamePanel.Size = new System.Drawing.Size(400, 500);
             GamePanel.TabIndex = 0;
+            GamePanel.Paint += GamePanel_Paint;
             // 
             // Points
             // 
@@ -149,6 +148,12 @@
             InformationsToolStripMenuItem.Size = new System.Drawing.Size(76, 20);
             InformationsToolStripMenuItem.Text = "Informacje";
             InformationsToolStripMenuItem.Click += ShowGameInformations;
+            // 
+            // BallTimer
+            // 
+            BallTimer.Enabled = true;
+            BallTimer.Interval = 50;
+            BallTimer.Tick += BallTimer_Tick;
             // 
             // Visualizer
             // 
