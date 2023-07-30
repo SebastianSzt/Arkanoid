@@ -41,6 +41,9 @@
             SettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             InformationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             BallTimer = new System.Windows.Forms.Timer(components);
+            Border = new System.Windows.Forms.Panel();
+            Level = new System.Windows.Forms.Label();
+            LevelValue = new System.Windows.Forms.Label();
             menuStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -85,12 +88,12 @@
             // 
             Lifes.Anchor = System.Windows.Forms.AnchorStyles.Top;
             Lifes.AutoSize = true;
-            Lifes.Font = new System.Drawing.Font("Unispace", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            Lifes.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             Lifes.ForeColor = System.Drawing.Color.White;
-            Lifes.Location = new System.Drawing.Point(317, 64);
-            Lifes.Margin = new System.Windows.Forms.Padding(3, 40, 5, 0);
+            Lifes.Location = new System.Drawing.Point(313, 44);
+            Lifes.Margin = new System.Windows.Forms.Padding(3, 20, 5, 10);
             Lifes.Name = "Lifes";
-            Lifes.Size = new System.Drawing.Size(82, 23);
+            Lifes.Size = new System.Drawing.Size(69, 19);
             Lifes.TabIndex = 3;
             Lifes.Text = "Życia:";
             // 
@@ -98,14 +101,14 @@
             // 
             LifesValue.Anchor = System.Windows.Forms.AnchorStyles.Top;
             LifesValue.AutoSize = true;
-            LifesValue.Font = new System.Drawing.Font("Unispace", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            LifesValue.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             LifesValue.ForeColor = System.Drawing.Color.White;
-            LifesValue.Location = new System.Drawing.Point(407, 64);
-            LifesValue.Margin = new System.Windows.Forms.Padding(3, 40, 3, 0);
+            LifesValue.Location = new System.Drawing.Point(390, 44);
+            LifesValue.Margin = new System.Windows.Forms.Padding(3, 20, 3, 10);
             LifesValue.Name = "LifesValue";
-            LifesValue.Size = new System.Drawing.Size(22, 23);
+            LifesValue.Size = new System.Drawing.Size(39, 19);
             LifesValue.TabIndex = 4;
-            LifesValue.Text = "0";
+            LifesValue.Text = "0/0";
             // 
             // menuStrip
             // 
@@ -121,6 +124,7 @@
             NewGameToolStripMenuItem.Name = "NewGameToolStripMenuItem";
             NewGameToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             NewGameToolStripMenuItem.Text = "Nowa gra";
+            NewGameToolStripMenuItem.Click += NewGameToolStripMenuItem_Click;
             // 
             // SaveToolStripMenuItem
             // 
@@ -151,9 +155,43 @@
             // 
             // BallTimer
             // 
-            BallTimer.Enabled = true;
-            BallTimer.Interval = 50;
+            BallTimer.Interval = 75;
             BallTimer.Tick += BallTimer_Tick;
+            // 
+            // Border
+            // 
+            Border.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            Border.BackColor = System.Drawing.Color.White;
+            Border.Location = new System.Drawing.Point(28, 126);
+            Border.Name = "Border";
+            Border.Size = new System.Drawing.Size(402, 502);
+            Border.TabIndex = 6;
+            // 
+            // Level
+            // 
+            Level.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            Level.AutoSize = true;
+            Level.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            Level.ForeColor = System.Drawing.Color.White;
+            Level.Location = new System.Drawing.Point(303, 83);
+            Level.Margin = new System.Windows.Forms.Padding(3, 10, 5, 0);
+            Level.Name = "Level";
+            Level.Size = new System.Drawing.Size(79, 19);
+            Level.TabIndex = 7;
+            Level.Text = "Poziom:";
+            // 
+            // LevelValue
+            // 
+            LevelValue.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            LevelValue.AutoSize = true;
+            LevelValue.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            LevelValue.ForeColor = System.Drawing.Color.White;
+            LevelValue.Location = new System.Drawing.Point(390, 83);
+            LevelValue.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
+            LevelValue.Name = "LevelValue";
+            LevelValue.Size = new System.Drawing.Size(39, 19);
+            LevelValue.TabIndex = 8;
+            LevelValue.Text = "0/0";
             // 
             // Visualizer
             // 
@@ -161,16 +199,22 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(25, 25, 25);
             ClientSize = new System.Drawing.Size(458, 676);
+            Controls.Add(GamePanel);
+            Controls.Add(LevelValue);
+            Controls.Add(Level);
+            Controls.Add(Border);
             Controls.Add(LifesValue);
             Controls.Add(Lifes);
             Controls.Add(PointsValue);
             Controls.Add(Points);
-            Controls.Add(GamePanel);
             Controls.Add(menuStrip);
+            DoubleBuffered = true;
             MainMenuStrip = menuStrip;
             MinimumSize = new System.Drawing.Size(474, 715);
             Name = "Visualizer";
             Text = "Arkanoid";
+            KeyDown += Visualizer_KeyDown;
+            KeyUp += Visualizer_KeyUp;
             menuStrip.ResumeLayout(false);
             menuStrip.PerformLayout();
             ResumeLayout(false);
@@ -191,5 +235,8 @@
         private System.Windows.Forms.ToolStripMenuItem SettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem InformationsToolStripMenuItem;
         private System.Windows.Forms.Timer BallTimer;
+        private System.Windows.Forms.Panel Border;
+        private System.Windows.Forms.Label Level;
+        private System.Windows.Forms.Label LevelValue;
     }
 }

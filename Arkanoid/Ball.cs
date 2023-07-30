@@ -28,9 +28,10 @@ namespace Arkanoid
         {
             SolidBrush brush = new SolidBrush(color);
             e.Graphics.FillEllipse(brush, new RectangleF(posX, posY, width, height));
+            brush.Dispose();
         }
 
-        public void Move()
+        public override void Move()
         {
             if (posX + vX < 0)
             {
@@ -56,6 +57,11 @@ namespace Arkanoid
             {
                 posY += vY;
             }
+        }
+
+        public void MoveX(int paddleVX)
+        {
+            posX += paddleVX;
         }
 
         public bool CheckNextMove()

@@ -11,5 +11,6 @@ namespace Arkanoid
     internal interface IGameObject
     {
         void Draw(PaintEventArgs e);
+        void Move();
     }
 }
