@@ -17,7 +17,7 @@ namespace Arkanoid
         private Ball gameBall;
         private Paddle gamePaddle;
 
-        public int paddleVelocity { get; }
+        private int paddleVelocity;
         private int points;
         private int lifes;
         private int currentLifes;
@@ -44,7 +44,7 @@ namespace Arkanoid
             this.panelHeight = panelHeight;
             this.paddleVelocity = 10;
             int randomDirection = random.Next(2) == 0 ? -1 : 1;
-            gameBall = new Ball(panelWidth / 2 - 5, (int)(panelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 15), -7, panelWidth, panelHeight);
+            gameBall = new Ball(panelWidth / 2 - 5, (int)(panelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 15), -10, panelWidth, panelHeight);
             gamePaddle = new Paddle(panelWidth / 2 - 30, (int)(panelHeight * 0.85) - 4, 60, 8, Color.White, paddleVelocity, panelWidth);
             this.lifes = lifes;
             this.currentLifes = lifes;
@@ -64,7 +64,7 @@ namespace Arkanoid
                 if (currentLifes > 0)
                 {
                     int randomDirection = random.Next(2) == 0 ? -1 : 1;
-                    gameBall = new Ball(panelWidth / 2 - 5, (int)(panelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 15), -7, panelWidth, panelHeight);
+                    gameBall = new Ball(panelWidth / 2 - 5, (int)(panelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 15), -10, panelWidth, panelHeight);
                     gamePaddle = new Paddle(panelWidth / 2 - 30, (int)(panelHeight * 0.85) - 4, 60, 8, Color.White, paddleVelocity, panelWidth);
                     ballStart = true;
                 }
@@ -90,6 +90,7 @@ namespace Arkanoid
             if (e == Keys.A)
             {
                 gamePaddle.vX = -paddleVelocity;
+                gamePaddle.originalVX = -10;
                 if (ballStart)
                 {
                     if (gamePaddle.posXValue - paddleVelocity >= 0)
@@ -101,6 +102,7 @@ namespace Arkanoid
             else if (e == Keys.D)
             {
                 gamePaddle.vX = paddleVelocity;
+                gamePaddle.originalVX = 10;
                 if (ballStart)
                 {
                     if (gamePaddle.posXValue + gamePaddle.widthValue + gamePaddle.vX <= panelWidth)
@@ -115,6 +117,22 @@ namespace Arkanoid
         public void ResetPaddleVX()
         {
             gamePaddle.vX = 0;
+        }
+
+        public void AccelerateBall()
+        {
+            gameBall.AccelerateBall -= 1;
+        }
+
+        public void ChangeObjectsSize(int panelWidth, int panelHeight, float xRatio, float yRatio)
+        {
+            this.panelWidth = panelWidth;
+            this.panelHeight = panelHeight;
+
+            paddleVelocity = (int)(10 * xRatio);
+
+            gameBall.ChangeSize(xRatio, yRatio);
+            gamePaddle.ChangeSize(xRatio, yRatio);
         }
     }
 }

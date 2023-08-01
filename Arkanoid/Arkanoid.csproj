@@ -8,15 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\background.jpg" />
-    <None Remove="Assets\pause.png" />
-    <None Remove="Assets\play.png" />
+    <None Remove="Assets\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\background.jpg" />
-    <Resource Include="Assets\pause.png" />
-    <Resource Include="Assets\play.png" />
+    <Resource Include="Assets\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>

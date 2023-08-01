@@ -59,25 +59,5 @@ namespace Arkanoid.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Wyszukuje zlokalizowany zasób typu System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap pause {
-            get {
-                object obj = ResourceManager.GetObject("pause", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Wyszukuje zlokalizowany zasób typu System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap play {
-            get {
-                object obj = ResourceManager.GetObject("play", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }

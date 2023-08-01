@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Settings));
             SettingsLabel = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -98,20 +99,20 @@
             label3.Location = new System.Drawing.Point(19, 123);
             label3.Margin = new System.Windows.Forms.Padding(10, 5, 10, 20);
             label3.Name = "label3";
-            label3.Size = new System.Drawing.Size(377, 18);
+            label3.Size = new System.Drawing.Size(386, 18);
             label3.TabIndex = 5;
-            label3.Text = "Interwał przyśpieszania piłki: (5s - 10s)";
+            label3.Text = "Interwał przyśpieszania piłki: (30s - 60s)";
             // 
             // numericUpDown3
             // 
             numericUpDown3.Location = new System.Drawing.Point(409, 121);
             numericUpDown3.Margin = new System.Windows.Forms.Padding(3, 3, 10, 3);
-            numericUpDown3.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
-            numericUpDown3.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
+            numericUpDown3.Maximum = new decimal(new int[] { 60, 0, 0, 0 });
+            numericUpDown3.Minimum = new decimal(new int[] { 30, 0, 0, 0 });
             numericUpDown3.Name = "numericUpDown3";
             numericUpDown3.Size = new System.Drawing.Size(120, 25);
             numericUpDown3.TabIndex = 6;
-            numericUpDown3.Value = new decimal(new int[] { 5, 0, 0, 0 });
+            numericUpDown3.Value = new decimal(new int[] { 30, 0, 0, 0 });
             // 
             // NewGameSettingsButton
             // 
@@ -155,6 +156,7 @@
             Font = new System.Drawing.Font("Unispace", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             ForeColor = System.Drawing.Color.White;
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(4);
             Name = "Settings";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

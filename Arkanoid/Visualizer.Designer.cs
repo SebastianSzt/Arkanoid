@@ -29,7 +29,10 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Visualizer));
             GamePanel = new System.Windows.Forms.Panel();
+            pauseLabel = new System.Windows.Forms.Label();
+            startLabel = new System.Windows.Forms.Label();
             Points = new System.Windows.Forms.Label();
             PointsValue = new System.Windows.Forms.Label();
             Lifes = new System.Windows.Forms.Label();
@@ -44,13 +47,15 @@
             Border = new System.Windows.Forms.Panel();
             Level = new System.Windows.Forms.Label();
             LevelValue = new System.Windows.Forms.Label();
+            GamePanel.SuspendLayout();
             menuStrip.SuspendLayout();
             SuspendLayout();
             // 
             // GamePanel
             // 
-            GamePanel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             GamePanel.BackColor = System.Drawing.Color.FromArgb(35, 35, 35);
+            GamePanel.Controls.Add(pauseLabel);
+            GamePanel.Controls.Add(startLabel);
             GamePanel.Location = new System.Drawing.Point(29, 127);
             GamePanel.Margin = new System.Windows.Forms.Padding(20, 40, 20, 40);
             GamePanel.Name = "GamePanel";
@@ -58,14 +63,38 @@
             GamePanel.TabIndex = 0;
             GamePanel.Paint += GamePanel_Paint;
             // 
+            // pauseLabel
+            // 
+            pauseLabel.BackColor = System.Drawing.Color.Transparent;
+            pauseLabel.Font = new System.Drawing.Font("Unispace", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            pauseLabel.ForeColor = System.Drawing.Color.White;
+            pauseLabel.Location = new System.Drawing.Point(0, 0);
+            pauseLabel.Name = "pauseLabel";
+            pauseLabel.Size = new System.Drawing.Size(400, 500);
+            pauseLabel.TabIndex = 1;
+            pauseLabel.Text = "PAUZA\r\n";
+            pauseLabel.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            pauseLabel.Visible = false;
+            // 
+            // startLabel
+            // 
+            startLabel.BackColor = System.Drawing.Color.Transparent;
+            startLabel.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            startLabel.ForeColor = System.Drawing.Color.White;
+            startLabel.Location = new System.Drawing.Point(0, 0);
+            startLabel.Name = "startLabel";
+            startLabel.Size = new System.Drawing.Size(400, 500);
+            startLabel.TabIndex = 0;
+            startLabel.Text = "Naciśnij spację, aby wystrzelić piłkę\r\n";
+            startLabel.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            // 
             // Points
             // 
-            Points.Anchor = System.Windows.Forms.AnchorStyles.Top;
             Points.AutoSize = true;
             Points.Font = new System.Drawing.Font("Unispace", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             Points.ForeColor = System.Drawing.Color.White;
             Points.Location = new System.Drawing.Point(29, 64);
-            Points.Margin = new System.Windows.Forms.Padding(3, 40, 5, 0);
+            Points.Margin = new System.Windows.Forms.Padding(3, 40, 0, 0);
             Points.Name = "Points";
             Points.Size = new System.Drawing.Size(94, 23);
             Points.TabIndex = 1;
@@ -73,12 +102,11 @@
             // 
             // PointsValue
             // 
-            PointsValue.Anchor = System.Windows.Forms.AnchorStyles.Top;
             PointsValue.AutoSize = true;
             PointsValue.Font = new System.Drawing.Font("Unispace", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             PointsValue.ForeColor = System.Drawing.Color.White;
-            PointsValue.Location = new System.Drawing.Point(131, 64);
-            PointsValue.Margin = new System.Windows.Forms.Padding(3, 40, 3, 0);
+            PointsValue.Location = new System.Drawing.Point(123, 64);
+            PointsValue.Margin = new System.Windows.Forms.Padding(0, 40, 3, 0);
             PointsValue.Name = "PointsValue";
             PointsValue.Size = new System.Drawing.Size(22, 23);
             PointsValue.TabIndex = 2;
@@ -86,7 +114,6 @@
             // 
             // Lifes
             // 
-            Lifes.Anchor = System.Windows.Forms.AnchorStyles.Top;
             Lifes.AutoSize = true;
             Lifes.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             Lifes.ForeColor = System.Drawing.Color.White;
@@ -99,7 +126,6 @@
             // 
             // LifesValue
             // 
-            LifesValue.Anchor = System.Windows.Forms.AnchorStyles.Top;
             LifesValue.AutoSize = true;
             LifesValue.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             LifesValue.ForeColor = System.Drawing.Color.White;
@@ -160,7 +186,6 @@
             // 
             // Border
             // 
-            Border.Anchor = System.Windows.Forms.AnchorStyles.Top;
             Border.BackColor = System.Drawing.Color.White;
             Border.Location = new System.Drawing.Point(28, 126);
             Border.Name = "Border";
@@ -169,7 +194,6 @@
             // 
             // Level
             // 
-            Level.Anchor = System.Windows.Forms.AnchorStyles.Top;
             Level.AutoSize = true;
             Level.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             Level.ForeColor = System.Drawing.Color.White;
@@ -182,7 +206,6 @@
             // 
             // LevelValue
             // 
-            LevelValue.Anchor = System.Windows.Forms.AnchorStyles.Top;
             LevelValue.AutoSize = true;
             LevelValue.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             LevelValue.ForeColor = System.Drawing.Color.White;
@@ -209,12 +232,15 @@
             Controls.Add(Points);
             Controls.Add(menuStrip);
             DoubleBuffered = true;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip;
             MinimumSize = new System.Drawing.Size(474, 715);
             Name = "Visualizer";
             Text = "Arkanoid";
             KeyDown += Visualizer_KeyDown;
             KeyUp += Visualizer_KeyUp;
+            Resize += Visualizer_Resize;
+            GamePanel.ResumeLayout(false);
             menuStrip.ResumeLayout(false);
             menuStrip.PerformLayout();
             ResumeLayout(false);
@@ -238,5 +264,7 @@
         private System.Windows.Forms.Panel Border;
         private System.Windows.Forms.Label Level;
         private System.Windows.Forms.Label LevelValue;
+        private System.Windows.Forms.Label startLabel;
+        private System.Windows.Forms.Label pauseLabel;
     }
 }

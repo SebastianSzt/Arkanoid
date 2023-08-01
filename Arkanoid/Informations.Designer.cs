@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Informations));
             AuthorInfo = new System.Windows.Forms.Label();
             Subject = new System.Windows.Forms.Label();
             ControlsInfo = new System.Windows.Forms.Label();
@@ -149,6 +150,7 @@
             Controls.Add(Subject);
             Controls.Add(AuthorInfo);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Name = "Informations";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Informacje";

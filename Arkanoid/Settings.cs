@@ -12,7 +12,7 @@ namespace Arkanoid
 {
     public partial class Settings : Form
     {
-        public int levelValue {  get; set; }
+        public int levelValue { get; set; }
         public int lifesValue { get; set; }
         public int ballAccelerationIntervalValue { get; set; }
 
