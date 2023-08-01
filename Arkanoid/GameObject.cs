@@ -15,6 +15,8 @@ namespace Arkanoid
         protected int width;
         protected int height;
         protected Color color;
+        protected float xRatio;
+        protected float yRatio;
 
         public GameObject(int posX, int posY, int width, int height, Color color)
         {
@@ -23,9 +25,13 @@ namespace Arkanoid
             this.width = width;
             this.height = height;
             this.color = color;
+            this.xRatio = 1;
+            this.yRatio = 1;
         }
 
         public virtual void Draw(PaintEventArgs e) { }
         public virtual void Move() { }
+
+        public virtual void ChangeSize(float xRatio, float yRatio) { }
     }
 }

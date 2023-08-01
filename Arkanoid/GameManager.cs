@@ -28,6 +28,9 @@ namespace Arkanoid
         public bool ballStart;
         private bool gameOver;
 
+        private float xRatio;
+        private float yRatio;
+
         private Random random = new Random();
 
         public int pointsValue { get { return points; } }
@@ -45,7 +48,7 @@ namespace Arkanoid
             this.paddleVelocity = 10;
             int randomDirection = random.Next(2) == 0 ? -1 : 1;
             gameBall = new Ball(panelWidth / 2 - 5, (int)(panelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 15), -10, panelWidth, panelHeight);
-            gamePaddle = new Paddle(panelWidth / 2 - 30, (int)(panelHeight * 0.85) - 4, 60, 8, Color.White, paddleVelocity, panelWidth);
+            gamePaddle = new Paddle(panelWidth / 2 - 30, (int)(panelHeight * 0.85) - 4, 60, 8, Color.White, 0, panelWidth);
             this.lifes = lifes;
             this.currentLifes = lifes;
             this.points = 0;
@@ -54,6 +57,8 @@ namespace Arkanoid
             this.ballAccelerationInterval = ballAccelerationInterval;
             this.gameOver = false;
             this.ballStart = true;
+            xRatio = 1;
+            yRatio = 1;
         }
 
         public void CheckGameOver()
@@ -63,9 +68,11 @@ namespace Arkanoid
                 currentLifes--;
                 if (currentLifes > 0)
                 {
+                    int panelWidth = (int)Math.Round(this.panelWidth / xRatio);
+                    int panelHeight = (int)Math.Round(this.panelHeight / yRatio);
                     int randomDirection = random.Next(2) == 0 ? -1 : 1;
                     gameBall = new Ball(panelWidth / 2 - 5, (int)(panelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 15), -10, panelWidth, panelHeight);
-                    gamePaddle = new Paddle(panelWidth / 2 - 30, (int)(panelHeight * 0.85) - 4, 60, 8, Color.White, paddleVelocity, panelWidth);
+                    gamePaddle = new Paddle(panelWidth / 2 - 30, (int)(panelHeight * 0.85) - 4, 60, 8, Color.White, 0, panelWidth);
                     ballStart = true;
                 }
                 else
@@ -90,25 +97,23 @@ namespace Arkanoid
             if (e == Keys.A)
             {
                 gamePaddle.vX = -paddleVelocity;
-                gamePaddle.originalVX = -10;
                 if (ballStart)
                 {
-                    if (gamePaddle.posXValue - paddleVelocity >= 0)
-                        gameBall.MoveX(-paddleVelocity);
-                    else
+                    if (gamePaddle.posXValue - paddleVelocity < 0)
                         gameBall.MoveX(-gamePaddle.posXValue);
+                    else
+                        gameBall.MoveX(-paddleVelocity);
                 }
             }
             else if (e == Keys.D)
             {
                 gamePaddle.vX = paddleVelocity;
-                gamePaddle.originalVX = 10;
                 if (ballStart)
                 {
-                    if (gamePaddle.posXValue + gamePaddle.widthValue + gamePaddle.vX <= panelWidth)
-                        gameBall.MoveX(paddleVelocity);
-                    else
+                    if (gamePaddle.posXValue + gamePaddle.widthValue + gamePaddle.vX > panelWidth)
                         gameBall.MoveX(panelWidth - (gamePaddle.posXValue + gamePaddle.widthValue));
+                    else 
+                        gameBall.MoveX(paddleVelocity);
                 }
             }
             gamePaddle.Move();
@@ -124,15 +129,18 @@ namespace Arkanoid
             gameBall.AccelerateBall -= 1;
         }
 
-        public void ChangeObjectsSize(int panelWidth, int panelHeight, float xRatio, float yRatio)
+        public void ChangeObjectsSize(float xRatio, float yRatio)
         {
-            this.panelWidth = panelWidth;
-            this.panelHeight = panelHeight;
+            panelWidth = (int)Math.Round(Math.Round(panelWidth / this.xRatio) * xRatio);
+            panelHeight = (int)Math.Round(Math.Round(panelHeight / this.yRatio) * yRatio);
 
             paddleVelocity = (int)(10 * xRatio);
 
             gameBall.ChangeSize(xRatio, yRatio);
             gamePaddle.ChangeSize(xRatio, yRatio);
+
+            this.xRatio = xRatio;
+            this.yRatio = yRatio;
         }
     }
 }

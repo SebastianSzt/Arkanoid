@@ -17,14 +17,6 @@ namespace Arkanoid
         private int panelWidth;
         private int panelHeight;
 
-        private int originalPosX;
-        private int originalPosY;
-        private int originalWidth;
-        private int originalHeight;
-        private int originalVX;
-        private int originalVY;
-        private int originalPanelWidth;
-
         public int AccelerateBall { get { return vY; } set { vY = value; } }
 
         public Ball(int posX, int posY, int width, int height, Color color, int vX, int vY, int panelWidth, int panelHeight) : base(posX, posY, width, height, color) 
@@ -33,15 +25,7 @@ namespace Arkanoid
             this.vY = vY;
             this.panelWidth = panelWidth;
             this.panelHeight = panelHeight;
-
-            originalPosX = posX;
-            originalPosY = posY;
-            originalWidth = width;
-            originalHeight = height;
-            originalVX = vX;
-            originalVY = vY;
-            originalPanelWidth = panelWidth;
-    }
+        }
 
         public override void Draw(PaintEventArgs e)
         {
@@ -54,39 +38,26 @@ namespace Arkanoid
         {
             if (posX + vX < 0)
             {
-                originalPosX = 0;
-                originalVX = -originalVX;
-
                 posX = 0;
                 vX = -vX;
             }
             else if (posX + width + vX > panelWidth)
             {
-                originalPosX = originalPanelWidth - originalWidth;
-                originalVX = -originalVX;
-
                 posX = panelWidth - width;
                 vX = -vX;
             }
             else
             {
-                originalPosX += originalVX;
-
                 posX += vX;
             }
 
             if (posY + vY < 0)
             {
-                originalPosY = 0;
-                originalVY = -originalVY;
-
                 posY = 0;
                 vY = -vY;
             }
             else
             {
-                originalPosY += originalVY;
-
                 posY += vY;
             }
         }
@@ -94,7 +65,6 @@ namespace Arkanoid
         public void MoveX(int paddleVX)
         {
             posX += paddleVX;
-            originalPosX += paddleVX;
         }
 
         public bool CheckNextMove()
@@ -106,15 +76,19 @@ namespace Arkanoid
             return true;
         }
 
-        public void ChangeSize(float xRatio, float yRatio)
+        public override void ChangeSize(float xRatio, float yRatio)
         {
-            panelWidth = (int)(originalPanelWidth * xRatio);
-            posX = (int)(originalPosX * xRatio);
-            posY = (int)(originalPosY * yRatio);
-            width = (int)(originalWidth * xRatio);
-            height = (int)(originalHeight * yRatio);
-            vX = (int)(originalVX * xRatio);
-            vY = (int)(originalVX * yRatio);
+            panelWidth = (int)Math.Round(Math.Round(panelWidth / this.xRatio) * xRatio);
+            panelHeight = (int)Math.Round(Math.Round(panelHeight / this.yRatio) * yRatio);
+            posX = (int)Math.Round(Math.Round(posX / this.xRatio) * xRatio);
+            posY = (int)Math.Round(Math.Round(posY / this.yRatio) * yRatio);
+            width = (int)Math.Round(Math.Round(width / this.xRatio) * xRatio);
+            height = (int)Math.Round(Math.Round(height / this.yRatio) * yRatio);
+            vX = (int)Math.Round(Math.Round(vX / this.xRatio) * xRatio);
+            vY = (int)Math.Round(Math.Round(vY / this.yRatio) * yRatio);
+
+            this.xRatio = xRatio;
+            this.yRatio = yRatio;
         }
     }
 }

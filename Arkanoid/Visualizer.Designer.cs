@@ -31,6 +31,7 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Visualizer));
             GamePanel = new System.Windows.Forms.Panel();
+            gameOverLabel = new System.Windows.Forms.Label();
             pauseLabel = new System.Windows.Forms.Label();
             startLabel = new System.Windows.Forms.Label();
             Points = new System.Windows.Forms.Label();
@@ -54,6 +55,7 @@
             // GamePanel
             // 
             GamePanel.BackColor = System.Drawing.Color.FromArgb(35, 35, 35);
+            GamePanel.Controls.Add(gameOverLabel);
             GamePanel.Controls.Add(pauseLabel);
             GamePanel.Controls.Add(startLabel);
             GamePanel.Location = new System.Drawing.Point(29, 127);
@@ -62,6 +64,19 @@
             GamePanel.Size = new System.Drawing.Size(400, 500);
             GamePanel.TabIndex = 0;
             GamePanel.Paint += GamePanel_Paint;
+            // 
+            // gameOverLabel
+            // 
+            gameOverLabel.BackColor = System.Drawing.Color.Transparent;
+            gameOverLabel.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            gameOverLabel.ForeColor = System.Drawing.Color.White;
+            gameOverLabel.Location = new System.Drawing.Point(0, 0);
+            gameOverLabel.Name = "gameOverLabel";
+            gameOverLabel.Size = new System.Drawing.Size(400, 500);
+            gameOverLabel.TabIndex = 2;
+            gameOverLabel.Text = "Koniec gry, przegrałeś!\r\n";
+            gameOverLabel.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            gameOverLabel.Visible = false;
             // 
             // pauseLabel
             // 
@@ -266,5 +281,6 @@
         private System.Windows.Forms.Label LevelValue;
         private System.Windows.Forms.Label startLabel;
         private System.Windows.Forms.Label pauseLabel;
+        private System.Windows.Forms.Label gameOverLabel;
     }
 }

@@ -24,8 +24,8 @@ namespace Arkanoid
         private double timeCounter = 0.0;
         private Rectangle VisualizerOrginalRectangle;
         private Rectangle GamePanelOrginalRectangle;
-        float xRatio;
-        float yRatio;
+        float xRatio = 1;
+        float yRatio = 1;
 
         public Visualizer()
         {
@@ -34,7 +34,7 @@ namespace Arkanoid
             gameManager = new GameManager(GamePanel.Width, GamePanel.Height, 2, 2, 45);
 
             VisualizerOrginalRectangle = new Rectangle(this.Location.X, this.Location.Y, this.Size.Width, this.Size.Height);
-            GamePanelOrginalRectangle = new Rectangle(GamePanel.Location.X, GamePanel.Location.Y, GamePanel.Size.Width, GamePanel.Size.Height);
+            GamePanelOrginalRectangle = new Rectangle(GamePanel.Location.X, GamePanel.Location.Y, GamePanel.Width, GamePanel.Height);
 
             _movementTimer = new Timer { Interval = 50 };
             _movementTimer.Tick += _movementTimer_Tick;
@@ -113,7 +113,9 @@ namespace Arkanoid
             {
                 startLabel.Visible = true;
                 pauseLabel.Visible = false;
-                gameManager = new GameManager(GamePanel.Width, GamePanel.Height, SettingsForm.lifesValue, SettingsForm.levelValue, SettingsForm.ballAccelerationIntervalValue);
+                gameOverLabel.Visible = false;
+                gameManager = new GameManager((int)Math.Round(GamePanel.Width / xRatio), (int)Math.Round(GamePanel.Height / yRatio), SettingsForm.lifesValue, SettingsForm.levelValue, SettingsForm.ballAccelerationIntervalValue);
+                gameManager.ChangeObjectsSize(xRatio, yRatio);
                 RefreshEnvironment();
                 GamePanel.Refresh();
             }
@@ -151,9 +153,9 @@ namespace Arkanoid
 
             GamePanel.Refresh();
 
-            RefreshEnvironment();
-
             CheckGameStatus();
+
+            RefreshEnvironment();
         }
 
         private void CheckGameStatus()
@@ -164,11 +166,14 @@ namespace Arkanoid
                 _ResetMovement();
             }
 
-            if (gameManager.ballStart)
+            if (gameManager.gameOverStatus)
+            {
+                gameOverLabel.Visible = true;
+            }
+            else if (gameManager.ballStart)
             {
                 startLabel.Visible = true;
-
-                gameManager.ChangeObjectsSize(GamePanel.Size.Width, GamePanel.Size.Height, xRatio, yRatio);
+                gameManager.ChangeObjectsSize(xRatio, yRatio);
             }
         }
 
@@ -178,8 +183,9 @@ namespace Arkanoid
             _ResetMovement();
             startLabel.Visible = true;
             pauseLabel.Visible = false;
-            gameManager = new GameManager(GamePanel.Width, GamePanel.Height, gameManager.lifesValue, gameManager.levelValue, gameManager.ballAccelerationIntervalValue);
-            gameManager.ChangeObjectsSize(GamePanel.Size.Width, GamePanel.Size.Height, xRatio, yRatio);
+            gameOverLabel.Visible = false;
+            gameManager = new GameManager((int)Math.Round(GamePanel.Width / xRatio), (int)Math.Round(GamePanel.Height / yRatio), gameManager.lifesValue, gameManager.levelValue, gameManager.ballAccelerationIntervalValue);
+            gameManager.ChangeObjectsSize(xRatio, yRatio);
             RefreshEnvironment();
             GamePanel.Refresh();
         }
@@ -255,25 +261,28 @@ namespace Arkanoid
 
         private void Visualizer_Resize(object sender, EventArgs e)
         {
+            _ResetMovement();
+
             xRatio = (float)(this.Width) / (float)(VisualizerOrginalRectangle.Width);
             yRatio = (float)(this.Height) / (float)(VisualizerOrginalRectangle.Height);
 
             GamePanel.Location = new Point((int)(GamePanelOrginalRectangle.Location.X * xRatio), GamePanelOrginalRectangle.Location.Y);
             GamePanel.Size = new Size((int)(GamePanelOrginalRectangle.Size.Width * xRatio), (int)(GamePanelOrginalRectangle.Size.Height * yRatio));
             Border.Location = new Point(GamePanel.Location.X - 1, GamePanel.Location.Y - 1);
-            Border.Size = new Size(GamePanel.Size.Width + 2, GamePanel.Size.Height + 2);
+            Border.Size = new Size(GamePanel.Width + 2, GamePanel.Height + 2);
 
-            startLabel.Size = new Size(GamePanel.Size.Width, GamePanel.Size.Height);
-            pauseLabel.Size = new Size(GamePanel.Size.Width, GamePanel.Size.Height);
+            startLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
+            pauseLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
+            gameOverLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
             Points.Left = GamePanel.Location.X;
             PointsValue.Left = GamePanel.Location.X + Points.Size.Width;
 
-            LifesValue.Left = GamePanel.Location.X + GamePanel.Size.Width - LifesValue.Size.Width;
+            LifesValue.Left = GamePanel.Location.X + GamePanel.Width - LifesValue.Size.Width;
             Lifes.Left = LifesValue.Left - LifesValue.Margin.Left - Lifes.Margin.Right - Lifes.Size.Width;
-            LevelValue.Left = GamePanel.Location.X + GamePanel.Size.Width - LevelValue.Size.Width;
+            LevelValue.Left = GamePanel.Location.X + GamePanel.Width - LevelValue.Size.Width;
             Level.Left = LevelValue.Left - LevelValue.Margin.Left - Level.Margin.Right - Level.Size.Width;
 
-            gameManager.ChangeObjectsSize(GamePanel.Size.Width, GamePanel.Size.Height, xRatio, yRatio);
+            gameManager.ChangeObjectsSize(xRatio, yRatio);
         }
     }
 }

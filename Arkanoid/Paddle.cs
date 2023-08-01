@@ -14,13 +14,6 @@ namespace Arkanoid
         public int vX;
         private int panelWidth;
 
-        private int originalPosX;
-        private int originalPosY;
-        private int originalWidth;
-        private int originalHeight;
-        public int originalVX;
-        private int originalPanelWidth;
-
         public int posXValue { get { return posX; } }
         public int widthValue { get { return width; } }
 
@@ -28,13 +21,6 @@ namespace Arkanoid
         {
             this.vX = vX;
             this.panelWidth = panelWidth;
-
-            originalPosX = posX;
-            originalPosY = posY;
-            originalWidth = width;
-            originalHeight = height;
-            originalVX = vX;
-            originalPanelWidth = panelWidth;
         }
 
         public override void Draw(PaintEventArgs e)
@@ -49,28 +35,28 @@ namespace Arkanoid
             if (posX + vX < 0)
             {
                 posX = 0;
-                originalPosX = 0;
             }
             else if (posX + width + vX > panelWidth)
             {
                 posX = panelWidth - width;
-                originalPosX = originalPanelWidth - originalWidth;
             }
             else
             { 
                 posX += vX;
-                originalPosX += originalVX;
             }
         }
 
-        public void ChangeSize(float xRatio, float yRatio)
+        public override void ChangeSize(float xRatio, float yRatio)
         {
-            panelWidth = (int)(originalPanelWidth * xRatio);
-            posX = (int)(originalPosX * xRatio);
-            posY = (int)(originalPosY * yRatio);
-            width = (int)(originalWidth * xRatio);
-            height = (int)(originalHeight * yRatio);
-            vX = (int)(originalVX * xRatio);
+            panelWidth = (int)Math.Round(Math.Round(panelWidth / this.xRatio) * xRatio);
+            posX = (int)Math.Round(Math.Round(posX / this.xRatio) * xRatio);
+            posY = (int)Math.Round(Math.Round(posY / this.yRatio) * yRatio);
+            width = (int)Math.Round(Math.Round(width / this.xRatio) * xRatio);
+            height = (int)Math.Round(Math.Round(height / this.yRatio) * yRatio);
+            vX = (int)Math.Round(Math.Round(vX / this.xRatio) * xRatio);
+
+            this.xRatio = xRatio;
+            this.yRatio = yRatio;
         }
     }
 }
