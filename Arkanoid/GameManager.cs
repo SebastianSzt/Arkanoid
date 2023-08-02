@@ -11,71 +11,77 @@ namespace Arkanoid
 {
     internal class GameManager
     {
-        private int panelWidth;
-        private int panelHeight;
+        private int originalPanelWidth;
+        private int originalPanelHeight;
 
-        private Paddle GamePaddle;
-        private Ball GameBall;
-        
         private int points;
         private int lifes;
-        private int level;
+        private int levels;
         private int currentLifes;
         private int currentLevel;
-
-        private bool roundStart;
-        private bool gameOver;
 
         private int paddleVelocity;
         private int ballAccelerationInterval;
 
+        private bool levelStart;
+        private bool gameOver;
+        private bool gameWin;
+
         private float xRatio;
         private float yRatio;
+
+        private Grid GameGrid;
+        private Paddle GamePaddle;
+        private Ball GameBall;
 
         private Random random = new Random();
 
         public int PointsValue { get { return points; } }
         public int LifesValue { get { return lifes; } }
-        public int LevelValue { get { return level; } }
+        public int LevelsValue { get { return levels; } }
         public int CurrentLifesValue { get { return currentLifes; } }
         public int CurrentLevelValue { get { return currentLevel; } }
 
+        public bool RoundStartStatus { get { return levelStart; } set { levelStart = value; } }
         public bool GameOverStatus { get { return gameOver; } }
-        public bool RoundStartStatus { get { return roundStart; } set { roundStart = value; } }
+        public bool GameWinStatus { get { return gameWin; } }
 
         public int ResetPaddleVX { get { return GamePaddle.PaddleVX; } set { GamePaddle.PaddleVX = 0; } }
         public int BallAccelerationIntervalValue { get { return ballAccelerationInterval; } }
         public int AccelerateBallVY { get { return GameBall.AccelerateVY; } set { GameBall.AccelerateVY = (int)Math.Round(value * yRatio); } }
 
-        public GameManager(int panelWidth, int panelHeight, int lifes, int level, int ballAccelerationInterval)
+        public GameManager(int panelWidth, int panelHeight, int lifes, int level, int ballAccelerationInterval, float xRatio, float yRatio)
         {
-            this.panelWidth = panelWidth;
-            this.panelHeight = panelHeight;
-
-            int randomDirection = random.Next(2) == 0 ? -1 : 1;
-            GamePaddle = new Paddle(panelWidth / 2 - 30, (int)(panelHeight * 0.85) - 4, 60, 8, Color.White, panelWidth);
-            GameBall = new Ball(panelWidth / 2 - 5, (int)(panelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 14), -12, panelWidth, panelHeight, GamePaddle);
+            originalPanelWidth = (int)Math.Round(panelWidth / xRatio);
+            originalPanelHeight = (int)Math.Round(panelHeight / yRatio);
 
             points = 0;
             this.lifes = lifes;
-            this.level = level;
+            this.levels = level;
             currentLifes = lifes;
             currentLevel = 1;
 
-            roundStart = true;
-            gameOver = false;
-
-            paddleVelocity = 12;
+            paddleVelocity = (int)Math.Round(14 * xRatio);
             this.ballAccelerationInterval = ballAccelerationInterval;
 
-            xRatio = 1;
-            yRatio = 1;
+            levelStart = true;
+            gameOver = false;
+            gameWin = false;
+
+            this.xRatio = xRatio;
+            this.yRatio = yRatio;
+
+            int randomDirection = random.Next(2) == 0 ? -1 : 1;
+            GameGrid = new Grid(originalPanelWidth, originalPanelHeight, 18, 13);
+            GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
+            GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 15), -12, GamePaddle);
         }
 
         public void DrawGameObjects(PaintEventArgs e)
         {
-            GameBall.Draw(e);
+            GameGrid.DrawBricks(e);
             GamePaddle.Draw(e);
+            GameBall.Draw(e);
         }
 
         public void MakeTick()
@@ -83,50 +89,66 @@ namespace Arkanoid
             GameBall.Move();
             GameBall.CheckColisionWithPaddle();
             GameBall.CheckColisionWithWalls();
+            CheckGameWin();
             CheckGameOver();
         }
 
-        public void CheckGameOver()
+        private void CheckGameWin()
+        {
+            if (GameGrid.CheckLevelEnd())
+            {
+                currentLevel++;
+                if (currentLevel <= levels)
+                {
+                    levelStart = true;
+
+                    GameGrid.CreateNextLevel();
+
+                    int randomDirection = random.Next(2) == 0 ? -1 : 1;
+                    GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
+                    GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 15), -14, GamePaddle);
+                }
+                else
+                    gameWin = true;
+            }
+        }
+
+        private void CheckGameOver()
         {
             if (GameBall.CheckRoundFail())
             {
                 currentLifes--;
                 if (currentLifes > 0)
                 {
-                    int panelWidth = (int)Math.Round(this.panelWidth / xRatio);
-                    int panelHeight = (int)Math.Round(this.panelHeight / yRatio);
+                    levelStart = true;
 
                     int randomDirection = random.Next(2) == 0 ? -1 : 1;
-                    GamePaddle = new Paddle(panelWidth / 2 - 30, (int)(panelHeight * 0.85) - 4, 60, 8, Color.White, panelWidth);
-                    GameBall = new Ball(panelWidth / 2 - 5, (int)(panelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 15), -10, panelWidth, panelHeight, GamePaddle);
-
-                    roundStart = true;
+                    GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
+                    GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 15), -14, GamePaddle);
                 }
                 else
                     gameOver = true;
             }
         }
-        
+
         public void MovePaddle(Keys e)
         {
             GamePaddle.SetDirection(e, paddleVelocity);
             GamePaddle.Move();
-            if (roundStart)
+            if (levelStart)
                 GameBall.PositionWithPaddle();
         }
 
         public void ChangeObjectsSize(float xRatio, float yRatio)
         {
-            panelWidth = (int)Math.Round(Math.Round(panelWidth / this.xRatio) * xRatio);
-            panelHeight = (int)Math.Round(Math.Round(panelHeight / this.yRatio) * yRatio);
-
-            paddleVelocity = (int)Math.Round(10 * xRatio);
-
-            GameBall.ChangeSize(xRatio, yRatio);
-            GamePaddle.ChangeSize(xRatio, yRatio);
+            paddleVelocity = (int)Math.Round(14 * xRatio);
 
             this.xRatio = xRatio;
             this.yRatio = yRatio;
+
+            GameGrid.ChangeBricsSize(xRatio, yRatio);
+            GameBall.ChangeSize(xRatio, yRatio);
+            GamePaddle.ChangeSize(xRatio, yRatio);
         }
     }
 }

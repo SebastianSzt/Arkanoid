@@ -11,8 +11,9 @@ namespace Arkanoid
 {
     internal class Paddle : GameObject
     {
-        private int vX;
         private int panelWidth;
+
+        private int vX;
 
         public int PaddlePosX { get { return posX; } }
         public int PaddlePosY { get { return posY; } }
@@ -20,10 +21,11 @@ namespace Arkanoid
         public int PaddleHeight { get { return height; } }
         public int PaddleVX { get { return vX; } set { vX = value; } }
 
-        public Paddle(int posX, int posY, int width, int height, Color color, int panelWidth) : base(posX, posY, width, height, color)
+        public Paddle(int panelWidth, int posX, int posY, int width, int height, Color color) : base(posX, posY, width, height, color)
         {
-            vX = 0;
             this.panelWidth = panelWidth;
+
+            vX = 0;
         }
 
         public override void Draw(PaintEventArgs e)

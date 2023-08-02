@@ -31,6 +31,7 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Visualizer));
             GamePanel = new System.Windows.Forms.Panel();
+            gameWinLabel = new System.Windows.Forms.Label();
             gameOverLabel = new System.Windows.Forms.Label();
             pauseLabel = new System.Windows.Forms.Label();
             startLabel = new System.Windows.Forms.Label();
@@ -55,6 +56,7 @@
             // GamePanel
             // 
             GamePanel.BackColor = System.Drawing.Color.FromArgb(35, 35, 35);
+            GamePanel.Controls.Add(gameWinLabel);
             GamePanel.Controls.Add(gameOverLabel);
             GamePanel.Controls.Add(pauseLabel);
             GamePanel.Controls.Add(startLabel);
@@ -64,6 +66,19 @@
             GamePanel.Size = new System.Drawing.Size(400, 500);
             GamePanel.TabIndex = 0;
             GamePanel.Paint += GamePanel_Paint;
+            // 
+            // gameWinLabel
+            // 
+            gameWinLabel.BackColor = System.Drawing.Color.Transparent;
+            gameWinLabel.Font = new System.Drawing.Font("Unispace", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            gameWinLabel.ForeColor = System.Drawing.Color.White;
+            gameWinLabel.Location = new System.Drawing.Point(0, 0);
+            gameWinLabel.Name = "gameWinLabel";
+            gameWinLabel.Size = new System.Drawing.Size(400, 500);
+            gameWinLabel.TabIndex = 3;
+            gameWinLabel.Text = "Koniec gry, wygrałeś!";
+            gameWinLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            gameWinLabel.Visible = false;
             // 
             // gameOverLabel
             // 
@@ -282,5 +297,6 @@
         private System.Windows.Forms.Label startLabel;
         private System.Windows.Forms.Label pauseLabel;
         private System.Windows.Forms.Label gameOverLabel;
+        private System.Windows.Forms.Label gameWinLabel;
     }
 }

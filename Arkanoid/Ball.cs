@@ -12,14 +12,18 @@ namespace Arkanoid
 {
     internal class Ball : GameObject
     {
-        private int vX;
-        private int vY;
         private int panelWidth;
         private int panelHeight;
+
+        private int vX;
+        private int vY;
 
         private Paddle GamePaddle;
 
         Random random = new Random();
+
+        public int BallWidth { get { return width; } }
+        public int BallHeight { get { return height; } }
 
         public int AccelerateVY 
         { 
@@ -33,12 +37,14 @@ namespace Arkanoid
             } 
         }
 
-        public Ball(int posX, int posY, int width, int height, Color color, int vX, int vY, int panelWidth, int panelHeight, Paddle GamePaddle) : base(posX, posY, width, height, color) 
-        { 
-            this.vX = vX;
-            this.vY = vY;
+        public Ball(int panelWidth, int panelHeight, int posX, int posY, int width, int height, Color color, int vX, int vY, Paddle GamePaddle) : base(posX, posY, width, height, color) 
+        {
             this.panelWidth = panelWidth;
             this.panelHeight = panelHeight;
+
+            this.vX = vX;
+            this.vY = vY;
+            
             this.GamePaddle = GamePaddle;
         }
 
@@ -70,7 +76,7 @@ namespace Arkanoid
 
             if (ballRect.IntersectsWith(paddleRect))
             {
-                if (posX + width / 2 <= GamePaddle.PaddlePosX && posY + width / 2 >= GamePaddle.PaddlePosY)
+                if (posX + width / 2 <= GamePaddle.PaddlePosX && posY + height / 4 >= GamePaddle.PaddlePosY)
                 {
                     posX = GamePaddle.PaddlePosX - width;
 
@@ -81,7 +87,7 @@ namespace Arkanoid
                     else
                         vX = -vX;
                 }
-                else if (posX + width / 2 >= GamePaddle.PaddlePosX + GamePaddle.PaddleWidth && posY + width / 2 >= GamePaddle.PaddlePosY)
+                else if (posX + width / 2 >= GamePaddle.PaddlePosX + GamePaddle.PaddleWidth && posY + height / 4 >= GamePaddle.PaddlePosY)
                 {
                     posX = GamePaddle.PaddlePosX + GamePaddle.PaddleWidth;
 

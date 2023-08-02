@@ -25,8 +25,8 @@ namespace Arkanoid
             this.width = width;
             this.height = height;
             this.color = color;
-            this.xRatio = 1;
-            this.yRatio = 1;
+            xRatio = 1;
+            yRatio = 1;
         }
 
         public virtual void Draw(PaintEventArgs e) { }

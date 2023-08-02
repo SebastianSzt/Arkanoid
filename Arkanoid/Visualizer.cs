@@ -34,7 +34,7 @@ namespace Arkanoid
         {
             InitializeComponent();
 
-            GameManager = new GameManager(GamePanel.Width, GamePanel.Height, 2, 2, 45);
+            GameManager = new GameManager(GamePanel.Width, GamePanel.Height, 2, 2, 45, xRatio, xRatio);
 
             _movementTimer = new Timer { Interval = 50 };
             _movementTimer.Tick += _movementTimer_Tick;
@@ -68,7 +68,7 @@ namespace Arkanoid
                 pauseLabel.Visible = true;
             }
 
-            Settings SettingsForm = new Settings(GameManager.LevelValue, GameManager.LifesValue, GameManager.BallAccelerationIntervalValue);
+            Settings SettingsForm = new Settings(GameManager.LevelsValue, GameManager.LifesValue, GameManager.BallAccelerationIntervalValue);
 
             SettingsForm.ShowDialog();
 
@@ -77,7 +77,8 @@ namespace Arkanoid
                 startLabel.Visible = true;
                 pauseLabel.Visible = false;
                 gameOverLabel.Visible = false;
-                GameManager = new GameManager((int)Math.Round(GamePanel.Width / xRatio), (int)Math.Round(GamePanel.Height / yRatio), SettingsForm.lifesValue, SettingsForm.levelValue, SettingsForm.ballAccelerationIntervalValue);
+                gameWinLabel.Visible = false;
+                GameManager = new GameManager(GamePanel.Width, GamePanel.Height, SettingsForm.lifesValue, SettingsForm.levelValue, SettingsForm.ballAccelerationIntervalValue, xRatio, yRatio);
                 timeCounter = 0;
                 GameManager.ChangeObjectsSize(xRatio, yRatio);
                 RefreshEnvironment();
@@ -106,7 +107,8 @@ namespace Arkanoid
             startLabel.Visible = true;
             pauseLabel.Visible = false;
             gameOverLabel.Visible = false;
-            GameManager = new GameManager((int)Math.Round(GamePanel.Width / xRatio), (int)Math.Round(GamePanel.Height / yRatio), GameManager.LifesValue, GameManager.LevelValue, GameManager.BallAccelerationIntervalValue);
+            gameWinLabel.Visible = false;
+            GameManager = new GameManager(GamePanel.Width, GamePanel.Height, GameManager.LifesValue, GameManager.LevelsValue, GameManager.BallAccelerationIntervalValue, xRatio, yRatio);
             timeCounter = 0;
             GameManager.ChangeObjectsSize(xRatio, yRatio);
             RefreshEnvironment();
@@ -120,7 +122,7 @@ namespace Arkanoid
 
             PointsValue.Text = GameManager.PointsValue.ToString();
             LifesValue.Text = GameManager.CurrentLifesValue.ToString() + "/" + GameManager.LifesValue.ToString();
-            LevelValue.Text = GameManager.CurrentLevelValue.ToString() + "/" + GameManager.LevelValue.ToString();
+            LevelValue.Text = GameManager.CurrentLevelValue.ToString() + "/" + GameManager.LevelsValue.ToString();
         }
 
         private void _movementTimer_Tick(object sender, EventArgs e)
@@ -184,7 +186,7 @@ namespace Arkanoid
 
         private void CheckGameStatus()
         {
-            if (GameManager.GameOverStatus || GameManager.RoundStartStatus)
+            if (GameManager.GameOverStatus || GameManager.RoundStartStatus || GameManager.GameWinStatus)
             {
                 BallTimer.Stop();
                 _ResetMovement();
@@ -194,17 +196,21 @@ namespace Arkanoid
             {
                 gameOverLabel.Visible = true;
             }
+            else if (GameManager.GameWinStatus)
+            {
+                gameWinLabel.Visible = true;
+            }
             else if (GameManager.RoundStartStatus)
             {
+                GameManager.ChangeObjectsSize(xRatio, yRatio);
                 startLabel.Visible = true;
                 timeCounter = 0;
-                GameManager.ChangeObjectsSize(xRatio, yRatio);
             }
         }
 
         private void Visualizer_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Space && !GameManager.GameOverStatus)
+            if (e.KeyCode == Keys.Space && !GameManager.GameOverStatus && !GameManager.GameWinStatus)
             {
                 if (!GameManager.RoundStartStatus)
                 {
@@ -287,14 +293,15 @@ namespace Arkanoid
                 xRatio = (float)(this.Width) / (float)(VisualizerOrginalRectangle.Width);
                 yRatio = (float)(this.Height) / (float)(VisualizerOrginalRectangle.Height);
 
-                GamePanel.Location = new Point((int)(GamePanelOrginalRectangle.Location.X * xRatio), GamePanelOrginalRectangle.Location.Y);
-                GamePanel.Size = new Size((int)(GamePanelOrginalRectangle.Size.Width * xRatio), (int)(GamePanelOrginalRectangle.Size.Height * yRatio));
+                GamePanel.Location = new Point((int)Math.Round(GamePanelOrginalRectangle.Location.X * xRatio), GamePanelOrginalRectangle.Location.Y);
+                GamePanel.Size = new Size((int)Math.Round(GamePanelOrginalRectangle.Size.Width * xRatio), (int)Math.Round(GamePanelOrginalRectangle.Size.Height * yRatio));
                 Border.Location = new Point(GamePanel.Location.X - 1, GamePanel.Location.Y - 1);
                 Border.Size = new Size(GamePanel.Width + 2, GamePanel.Height + 2);
 
                 startLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
                 pauseLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
                 gameOverLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
+                gameWinLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
                 Points.Left = GamePanel.Location.X;
                 PointsValue.Left = GamePanel.Location.X + Points.Size.Width;
 
