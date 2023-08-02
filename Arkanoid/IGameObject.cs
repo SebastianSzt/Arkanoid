@@ -12,7 +12,6 @@ namespace Arkanoid
     {
         void Draw(PaintEventArgs e);
         void Move();
-
         void ChangeSize(float xRatio, float yRatio);
     }
 }

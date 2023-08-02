@@ -31,7 +31,6 @@ namespace Arkanoid
 
         public virtual void Draw(PaintEventArgs e) { }
         public virtual void Move() { }
-
         public virtual void ChangeSize(float xRatio, float yRatio) { }
     }
 }

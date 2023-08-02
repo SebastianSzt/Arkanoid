@@ -16,28 +16,31 @@ namespace Arkanoid
 {
     public partial class Visualizer : Form
     {
-        private GameManager gameManager;
+        private GameManager GameManager;
+
         private bool _moveLeft;
         private bool _moveRight;
         private Keys _lastKey;
         private Timer _movementTimer;
+
         private double timeCounter = 0.0;
+
         private Rectangle VisualizerOrginalRectangle;
         private Rectangle GamePanelOrginalRectangle;
-        float xRatio = 1;
-        float yRatio = 1;
+        private float xRatio = 1;
+        private float yRatio = 1;
 
         public Visualizer()
         {
             InitializeComponent();
 
-            gameManager = new GameManager(GamePanel.Width, GamePanel.Height, 2, 2, 45);
-
-            VisualizerOrginalRectangle = new Rectangle(this.Location.X, this.Location.Y, this.Size.Width, this.Size.Height);
-            GamePanelOrginalRectangle = new Rectangle(GamePanel.Location.X, GamePanel.Location.Y, GamePanel.Width, GamePanel.Height);
+            GameManager = new GameManager(GamePanel.Width, GamePanel.Height, 2, 2, 45);
 
             _movementTimer = new Timer { Interval = 50 };
             _movementTimer.Tick += _movementTimer_Tick;
+
+            VisualizerOrginalRectangle = new Rectangle(this.Location.X, this.Location.Y, this.Size.Width, this.Size.Height);
+            GamePanelOrginalRectangle = new Rectangle(GamePanel.Location.X, GamePanel.Location.Y, GamePanel.Width, GamePanel.Height);
 
             typeof(Panel).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, GamePanel, new object[] { true });
             typeof(Panel).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, Border, new object[] { true });
@@ -56,6 +59,70 @@ namespace Arkanoid
             }
         }
 
+        private void ShowSettings(object sender, EventArgs e)
+        {
+            _ResetMovement();
+            if (BallTimer.Enabled)
+            {
+                BallTimer.Stop();
+                pauseLabel.Visible = true;
+            }
+
+            Settings SettingsForm = new Settings(GameManager.LevelValue, GameManager.LifesValue, GameManager.BallAccelerationIntervalValue);
+
+            SettingsForm.ShowDialog();
+
+            if (SettingsForm.NewSettingsStatus)
+            {
+                startLabel.Visible = true;
+                pauseLabel.Visible = false;
+                gameOverLabel.Visible = false;
+                GameManager = new GameManager((int)Math.Round(GamePanel.Width / xRatio), (int)Math.Round(GamePanel.Height / yRatio), SettingsForm.lifesValue, SettingsForm.levelValue, SettingsForm.ballAccelerationIntervalValue);
+                timeCounter = 0;
+                GameManager.ChangeObjectsSize(xRatio, yRatio);
+                RefreshEnvironment();
+                GamePanel.Refresh();
+            }
+        }
+
+        private void ShowGameInformations(object sender, EventArgs e)
+        {
+            _ResetMovement();
+            if (BallTimer.Enabled)
+            {
+                BallTimer.Stop();
+                pauseLabel.Visible = true;
+            }
+
+            Informations InformationsForm = new Informations();
+
+            InformationsForm.ShowDialog();
+        }
+
+        private void NewGameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BallTimer.Stop();
+            _ResetMovement();
+            startLabel.Visible = true;
+            pauseLabel.Visible = false;
+            gameOverLabel.Visible = false;
+            GameManager = new GameManager((int)Math.Round(GamePanel.Width / xRatio), (int)Math.Round(GamePanel.Height / yRatio), GameManager.LifesValue, GameManager.LevelValue, GameManager.BallAccelerationIntervalValue);
+            timeCounter = 0;
+            GameManager.ChangeObjectsSize(xRatio, yRatio);
+            RefreshEnvironment();
+            GamePanel.Refresh();
+        }
+
+        private void RefreshEnvironment()
+        {
+            if (File.Exists("save.bin") && File.Exists("save.txt"))
+                LoadToolStripMenuItem.Enabled = true;
+
+            PointsValue.Text = GameManager.PointsValue.ToString();
+            LifesValue.Text = GameManager.CurrentLifesValue.ToString() + "/" + GameManager.LifesValue.ToString();
+            LevelValue.Text = GameManager.CurrentLevelValue.ToString() + "/" + GameManager.LevelValue.ToString();
+        }
+
         private void _movementTimer_Tick(object sender, EventArgs e)
         {
             _DoMovement();
@@ -66,16 +133,16 @@ namespace Arkanoid
             if (_lastKey == Keys.A)
             {
                 if (_moveLeft)
-                    gameManager.MovePaddle(Keys.A);
+                    GameManager.MovePaddle(Keys.A);
                 else if (_moveRight)
-                    gameManager.MovePaddle(Keys.D);
+                    GameManager.MovePaddle(Keys.D);
             }
             else if (_lastKey == Keys.D)
             {
                 if (_moveRight)
-                    gameManager.MovePaddle(Keys.D);
+                    GameManager.MovePaddle(Keys.D);
                 else if (_moveLeft)
-                    gameManager.MovePaddle(Keys.A);
+                    GameManager.MovePaddle(Keys.A);
             }
 
             GamePanel.Refresh();
@@ -89,67 +156,24 @@ namespace Arkanoid
             _movementTimer.Stop();
         }
 
-        void RefreshEnvironment()
-        {
-            if (File.Exists("save.bin") && File.Exists("save.txt"))
-                LoadToolStripMenuItem.Enabled = true;
-
-            PointsValue.Text = gameManager.pointsValue.ToString();
-            LifesValue.Text = gameManager.currentLifesValue.ToString() + "/" + gameManager.lifesValue.ToString();
-            LevelValue.Text = gameManager.currentLevelValue.ToString() + "/" + gameManager.levelValue.ToString();
-        }
-
-        private void ShowSettings(object sender, EventArgs e)
-        {
-            BallTimer.Stop();
-            _ResetMovement();
-            pauseLabel.Visible = true;
-
-            Settings SettingsForm = new Settings(gameManager.levelValue, gameManager.lifesValue, gameManager.ballAccelerationIntervalValue);
-
-            SettingsForm.ShowDialog();
-
-            if (SettingsForm.IsNewSettings)
-            {
-                startLabel.Visible = true;
-                pauseLabel.Visible = false;
-                gameOverLabel.Visible = false;
-                gameManager = new GameManager((int)Math.Round(GamePanel.Width / xRatio), (int)Math.Round(GamePanel.Height / yRatio), SettingsForm.lifesValue, SettingsForm.levelValue, SettingsForm.ballAccelerationIntervalValue);
-                gameManager.ChangeObjectsSize(xRatio, yRatio);
-                RefreshEnvironment();
-                GamePanel.Refresh();
-            }
-        }
-
-        private void ShowGameInformations(object sender, EventArgs e)
-        {
-            BallTimer.Stop();
-            _ResetMovement();
-            pauseLabel.Visible = true;
-
-            Informations InformationsForm = new Informations();
-
-            InformationsForm.ShowDialog();
-        }
-
         private void GamePanel_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            gameManager.DrawGameObjects(e);
+            GameManager.DrawGameObjects(e);
         }
 
         private void BallTimer_Tick(object sender, EventArgs e)
         {
             timeCounter += BallTimer.Interval / 1000.0;
 
-            if (timeCounter >= gameManager.ballAccelerationIntervalValue)
+            if (timeCounter >= GameManager.BallAccelerationIntervalValue)
             {
-                timeCounter -= gameManager.ballAccelerationIntervalValue;
+                timeCounter -= GameManager.BallAccelerationIntervalValue;
 
-                gameManager.AccelerateBall();
+                GameManager.AccelerateBallVY = 1;
             }
 
-            gameManager.MakeTick();
+            GameManager.MakeTick();
 
             GamePanel.Refresh();
 
@@ -160,41 +184,29 @@ namespace Arkanoid
 
         private void CheckGameStatus()
         {
-            if (gameManager.gameOverStatus || gameManager.ballStart)
+            if (GameManager.GameOverStatus || GameManager.RoundStartStatus)
             {
                 BallTimer.Stop();
                 _ResetMovement();
             }
 
-            if (gameManager.gameOverStatus)
+            if (GameManager.GameOverStatus)
             {
                 gameOverLabel.Visible = true;
             }
-            else if (gameManager.ballStart)
+            else if (GameManager.RoundStartStatus)
             {
                 startLabel.Visible = true;
-                gameManager.ChangeObjectsSize(xRatio, yRatio);
+                timeCounter = 0;
+                GameManager.ChangeObjectsSize(xRatio, yRatio);
             }
-        }
-
-        private void NewGameToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            BallTimer.Stop();
-            _ResetMovement();
-            startLabel.Visible = true;
-            pauseLabel.Visible = false;
-            gameOverLabel.Visible = false;
-            gameManager = new GameManager((int)Math.Round(GamePanel.Width / xRatio), (int)Math.Round(GamePanel.Height / yRatio), gameManager.lifesValue, gameManager.levelValue, gameManager.ballAccelerationIntervalValue);
-            gameManager.ChangeObjectsSize(xRatio, yRatio);
-            RefreshEnvironment();
-            GamePanel.Refresh();
         }
 
         private void Visualizer_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Space && !gameManager.gameOverStatus)
+            if (e.KeyCode == Keys.Space && !GameManager.GameOverStatus)
             {
-                if (!gameManager.ballStart)
+                if (!GameManager.RoundStartStatus)
                 {
                     if (BallTimer.Enabled == true)
                     {
@@ -214,11 +226,11 @@ namespace Arkanoid
                 else
                 {
                     BallTimer.Start();
-                    gameManager.ballStart = false;
+                    GameManager.RoundStartStatus = false;
                     startLabel.Visible = false;
                 }
             }
-            else if (BallTimer.Enabled || gameManager.ballStart)
+            else if (BallTimer.Enabled || GameManager.RoundStartStatus)
             {
                 if (!_moveLeft && e.KeyCode == Keys.A)
                 {
@@ -245,7 +257,7 @@ namespace Arkanoid
                 if (!_moveLeft && !_moveRight)
                 {
                     _movementTimer.Stop();
-                    gameManager.ResetPaddleVX();
+                    GameManager.ResetPaddleVX = 0;
                 }
             }
             else if (e.KeyCode == Keys.D)
@@ -254,7 +266,7 @@ namespace Arkanoid
                 if (!_moveLeft && !_moveRight)
                 {
                     _movementTimer.Stop();
-                    gameManager.ResetPaddleVX();
+                    GameManager.ResetPaddleVX = 0;
                 }
             }
         }
@@ -263,26 +275,36 @@ namespace Arkanoid
         {
             _ResetMovement();
 
-            xRatio = (float)(this.Width) / (float)(VisualizerOrginalRectangle.Width);
-            yRatio = (float)(this.Height) / (float)(VisualizerOrginalRectangle.Height);
+            if (WindowState == FormWindowState.Minimized)
+            {
+                if (BallTimer.Enabled)
+                    BallTimer.Stop();
+                if (!GameManager.RoundStartStatus)
+                    pauseLabel.Visible = true;
+            }
+            else
+            {
+                xRatio = (float)(this.Width) / (float)(VisualizerOrginalRectangle.Width);
+                yRatio = (float)(this.Height) / (float)(VisualizerOrginalRectangle.Height);
 
-            GamePanel.Location = new Point((int)(GamePanelOrginalRectangle.Location.X * xRatio), GamePanelOrginalRectangle.Location.Y);
-            GamePanel.Size = new Size((int)(GamePanelOrginalRectangle.Size.Width * xRatio), (int)(GamePanelOrginalRectangle.Size.Height * yRatio));
-            Border.Location = new Point(GamePanel.Location.X - 1, GamePanel.Location.Y - 1);
-            Border.Size = new Size(GamePanel.Width + 2, GamePanel.Height + 2);
+                GamePanel.Location = new Point((int)(GamePanelOrginalRectangle.Location.X * xRatio), GamePanelOrginalRectangle.Location.Y);
+                GamePanel.Size = new Size((int)(GamePanelOrginalRectangle.Size.Width * xRatio), (int)(GamePanelOrginalRectangle.Size.Height * yRatio));
+                Border.Location = new Point(GamePanel.Location.X - 1, GamePanel.Location.Y - 1);
+                Border.Size = new Size(GamePanel.Width + 2, GamePanel.Height + 2);
 
-            startLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
-            pauseLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
-            gameOverLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
-            Points.Left = GamePanel.Location.X;
-            PointsValue.Left = GamePanel.Location.X + Points.Size.Width;
+                startLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
+                pauseLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
+                gameOverLabel.Size = new Size(GamePanel.Width, GamePanel.Height);
+                Points.Left = GamePanel.Location.X;
+                PointsValue.Left = GamePanel.Location.X + Points.Size.Width;
 
-            LifesValue.Left = GamePanel.Location.X + GamePanel.Width - LifesValue.Size.Width;
-            Lifes.Left = LifesValue.Left - LifesValue.Margin.Left - Lifes.Margin.Right - Lifes.Size.Width;
-            LevelValue.Left = GamePanel.Location.X + GamePanel.Width - LevelValue.Size.Width;
-            Level.Left = LevelValue.Left - LevelValue.Margin.Left - Level.Margin.Right - Level.Size.Width;
+                LifesValue.Left = GamePanel.Location.X + GamePanel.Width - LifesValue.Size.Width;
+                Lifes.Left = LifesValue.Left - LifesValue.Margin.Left - Lifes.Margin.Right - Lifes.Size.Width;
+                LevelValue.Left = GamePanel.Location.X + GamePanel.Width - LevelValue.Size.Width;
+                Level.Left = LevelValue.Left - LevelValue.Margin.Left - Level.Margin.Right - Level.Size.Width;
 
-            gameManager.ChangeObjectsSize(xRatio, yRatio);
+                GameManager.ChangeObjectsSize(xRatio, yRatio);
+            }
         }
     }
 }

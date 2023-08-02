@@ -11,15 +11,18 @@ namespace Arkanoid
 {
     internal class Paddle : GameObject
     {
-        public int vX;
+        private int vX;
         private int panelWidth;
 
-        public int posXValue { get { return posX; } }
-        public int widthValue { get { return width; } }
+        public int PaddlePosX { get { return posX; } }
+        public int PaddlePosY { get { return posY; } }
+        public int PaddleWidth { get { return width; } }
+        public int PaddleHeight { get { return height; } }
+        public int PaddleVX { get { return vX; } set { vX = value; } }
 
-        public Paddle(int posX, int posY, int width, int height, Color color, int vX, int panelWidth) : base(posX, posY, width, height, color)
+        public Paddle(int posX, int posY, int width, int height, Color color, int panelWidth) : base(posX, posY, width, height, color)
         {
-            this.vX = vX;
+            vX = 0;
             this.panelWidth = panelWidth;
         }
 
@@ -30,20 +33,34 @@ namespace Arkanoid
             brush.Dispose();
         }
 
+        
+        public void SetDirection(Keys e, int velocity)
+        {
+            if (e == Keys.A)
+            {
+                if (posX - velocity >= 0)
+                    vX = -velocity;
+                else
+                {
+                    posX = 0;
+                    vX = 0;
+                } 
+            }
+            else if (e == Keys.D)
+            {
+                if (posX + width + velocity <= panelWidth)
+                    vX = velocity;
+                else
+                {
+                    posX = panelWidth - width;
+                    vX = 0;
+                }
+            }
+        }
+
         public override void Move()
         {
-            if (posX + vX < 0)
-            {
-                posX = 0;
-            }
-            else if (posX + width + vX > panelWidth)
-            {
-                posX = panelWidth - width;
-            }
-            else
-            { 
-                posX += vX;
-            }
+            posX += vX;
         }
 
         public override void ChangeSize(float xRatio, float yRatio)

@@ -170,15 +170,15 @@
             // SaveToolStripMenuItem
             // 
             SaveToolStripMenuItem.Name = "SaveToolStripMenuItem";
-            SaveToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            SaveToolStripMenuItem.Text = "Zapisz";
+            SaveToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
+            SaveToolStripMenuItem.Text = "Zapisz grę";
             // 
             // LoadToolStripMenuItem
             // 
             LoadToolStripMenuItem.Enabled = false;
             LoadToolStripMenuItem.Name = "LoadToolStripMenuItem";
-            LoadToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
-            LoadToolStripMenuItem.Text = "Wczytaj";
+            LoadToolStripMenuItem.Size = new System.Drawing.Size(89, 20);
+            LoadToolStripMenuItem.Text = "Wczytaj zapis";
             // 
             // SettingsToolStripMenuItem
             // 
@@ -196,7 +196,7 @@
             // 
             // BallTimer
             // 
-            BallTimer.Interval = 75;
+            BallTimer.Interval = 60;
             BallTimer.Tick += BallTimer_Tick;
             // 
             // Border

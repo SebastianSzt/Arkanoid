@@ -12,12 +12,13 @@ namespace Arkanoid
 {
     public partial class Settings : Form
     {
+        private bool NewSettings = false;
+
         public int levelValue { get; set; }
         public int lifesValue { get; set; }
         public int ballAccelerationIntervalValue { get; set; }
 
-        private bool NewSettings = false;
-        public bool IsNewSettings { get { return NewSettings; } }
+        public bool NewSettingsStatus { get { return NewSettings; } }
 
         public Settings()
         {

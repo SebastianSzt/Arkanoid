@@ -17,14 +17,29 @@ namespace Arkanoid
         private int panelWidth;
         private int panelHeight;
 
-        public int AccelerateBall { get { return vY; } set { vY = value; } }
+        private Paddle GamePaddle;
 
-        public Ball(int posX, int posY, int width, int height, Color color, int vX, int vY, int panelWidth, int panelHeight) : base(posX, posY, width, height, color) 
+        Random random = new Random();
+
+        public int AccelerateVY 
+        { 
+            get { return vY; } 
+            set 
+            {
+                if (vY < 0)
+                    vY -= value;
+                else if (vY > 0)
+                    vY += value;
+            } 
+        }
+
+        public Ball(int posX, int posY, int width, int height, Color color, int vX, int vY, int panelWidth, int panelHeight, Paddle GamePaddle) : base(posX, posY, width, height, color) 
         { 
             this.vX = vX;
             this.vY = vY;
             this.panelWidth = panelWidth;
             this.panelHeight = panelHeight;
+            this.GamePaddle = GamePaddle;
         }
 
         public override void Draw(PaintEventArgs e)
@@ -34,7 +49,63 @@ namespace Arkanoid
             brush.Dispose();
         }
 
+        public void PositionWithPaddle()
+        {
+            posX = GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2) - (width / 2);
+            posY = GamePaddle.PaddlePosY - height;
+        }
+
         public override void Move()
+        {
+            posX += vX;
+            posY += vY;
+        }
+
+        public void CheckColisionWithPaddle()
+        {
+            RectangleF ballRect = new RectangleF(posX - 1, posY - 1, width + 2, height + 2);
+            Rectangle paddleRect = new Rectangle(GamePaddle.PaddlePosX - 1, GamePaddle.PaddlePosY - 1, GamePaddle.PaddleWidth + 2, GamePaddle.PaddleHeight + 2);
+
+            double paddleFriction = 0.3;
+
+            if (ballRect.IntersectsWith(paddleRect))
+            {
+                if (posX + width / 2 <= GamePaddle.PaddlePosX && posY + width / 2 >= GamePaddle.PaddlePosY)
+                {
+                    posX = GamePaddle.PaddlePosX - width;
+
+                    if (vX < 0 && GamePaddle.PaddleVX < 0)
+                        vX = vX + (int)Math.Round((1.0f - paddleFriction) * GamePaddle.PaddleVX);
+                    else if (vX > 0 && GamePaddle.PaddleVX < 0)
+                        vX = -vX + (int)Math.Round(paddleFriction * GamePaddle.PaddleVX);
+                    else
+                        vX = -vX;
+                }
+                else if (posX + width / 2 >= GamePaddle.PaddlePosX + GamePaddle.PaddleWidth && posY + width / 2 >= GamePaddle.PaddlePosY)
+                {
+                    posX = GamePaddle.PaddlePosX + GamePaddle.PaddleWidth;
+
+                    if (vX < 0 && GamePaddle.PaddleVX > 0)
+                        vX = -vX + (int)Math.Round(paddleFriction * GamePaddle.PaddleVX);
+                    else if (vX > 0 && GamePaddle.PaddleVX > 0)
+                        vX = vX + (int)Math.Round((1.0f - paddleFriction) * GamePaddle.PaddleVX);
+                    else
+                        vX = -vX;
+                }
+                else
+                {
+                    posY = GamePaddle.PaddlePosY - height;
+                   
+                    if ((vX < 0 && GamePaddle.PaddleVX < 0) || (vX > 0 && GamePaddle.PaddleVX > 0))
+                        vX = vX + (int)Math.Round((random.NextDouble() * 0.3 + 0.2) * GamePaddle.PaddleVX);
+                    else if ((vX < 0 && GamePaddle.PaddleVX > 0) || (vX > 0 && GamePaddle.PaddleVX < 0))
+                        vX = -vX - (int)Math.Round((random.NextDouble() * 0.3 + 0.3) * GamePaddle.PaddleVX);
+                    vY = -vY;
+                }
+            }
+        }
+
+        public void CheckColisionWithWalls()
         {
             if (posX + vX < 0)
             {
@@ -46,34 +117,19 @@ namespace Arkanoid
                 posX = panelWidth - width;
                 vX = -vX;
             }
-            else
-            {
-                posX += vX;
-            }
 
             if (posY + vY < 0)
             {
                 posY = 0;
                 vY = -vY;
             }
-            else
-            {
-                posY += vY;
-            }
         }
 
-        public void MoveX(int paddleVX)
+        public bool CheckRoundFail()
         {
-            posX += paddleVX;
-        }
-
-        public bool CheckNextMove()
-        {
-            if (posY + vY + height > panelHeight)
-            {
-                return false;
-            }
-            return true;
+            if (posY + height >= panelHeight)
+                return true;
+            return false;
         }
 
         public override void ChangeSize(float xRatio, float yRatio)
