@@ -11,6 +11,11 @@ namespace Arkanoid
     [Serializable]
     internal class Brick : GameObject
     {
+        public int BrickPosX { get { return posX; } }
+        public int BrickPosY { get { return posY; } }
+        public int BrickWidth { get { return width; } }
+        public int BrickHeight { get { return height; } }
+
         public Brick(int posX, int posY, int width, int height, Color color) : base(posX, posY, width, height, color) { }
 
         public override void Draw(PaintEventArgs e)

@@ -23,10 +23,13 @@ namespace Arkanoid
         private int currentLevel;
         private int brickWidth;
         private int brickHeight;
-        private int margin;
+        private int brickMarginLeftRight;
+        private int brickMarginTop;
 
         private float xRatio;
         private float yRatio;
+
+        public Brick this[int i, int j] { get { return bricksGrid[i, j]; } set { bricksGrid[i, j] = value; } }
 
         public int Rows { get { return bricksGrid.GetLength(0); } }
         public int Columns { get { return bricksGrid.GetLength(1); } }
@@ -41,7 +44,8 @@ namespace Arkanoid
             currentLevel = 1;
             brickWidth = (panelWidth - Columns + 1) / Columns;
             brickHeight = ((int)(panelHeight * 0.6) - Rows + 1) / Rows;
-            margin = (panelWidth - brickWidth * Columns - Columns - 1) / 2;
+            brickMarginLeftRight = (panelWidth - brickWidth * Columns - Columns - 1) / 2;
+            brickMarginTop = brickMarginLeftRight;
 
             xRatio = 1;
             yRatio = 1;
@@ -77,7 +81,7 @@ namespace Arkanoid
                             Color color;
                             if (col < words.Length && IsValidHexColor(words[col], out color))
                             {
-                                bricksGrid[row, col] = new Brick(margin + (brickWidth + 1) * col, margin + (brickHeight + 1) * row, brickWidth, brickHeight, color);
+                                bricksGrid[row, col] = new Brick(brickMarginLeftRight + (brickWidth + 1) * col, brickMarginTop + (brickHeight + 1) * row, brickWidth, brickHeight, color);
                             }
                         }
                     }
@@ -129,7 +133,7 @@ namespace Arkanoid
                                 if (randomColor == Color.FromArgb(35, 35, 35))
                                     randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
 
-                                bricksGrid[row, col] = new Brick(margin + (brickWidth + 1) * col, margin + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
+                                bricksGrid[row, col] = new Brick(brickMarginLeftRight + (brickWidth + 1) * col, brickMarginTop + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
                             }
                         }
                     }
@@ -145,7 +149,7 @@ namespace Arkanoid
 
                             for (int col = 0; col < Columns; col++)
                             {
-                                bricksGrid[row, col] = new Brick(margin + (brickWidth + 1) * col, margin + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
+                                bricksGrid[row, col] = new Brick(brickMarginLeftRight + (brickWidth + 1) * col, brickMarginTop + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
 
                                 int newR = Math.Max(0, Math.Min(255, randomColor.R + random.Next(-20, 21)));
                                 int newG = Math.Max(0, Math.Min(255, randomColor.G + random.Next(-20, 21)));
@@ -176,7 +180,7 @@ namespace Arkanoid
 
                             for (int row = 0; row < Rows; row++)
                             {
-                                bricksGrid[row, col] = new Brick(margin + (brickWidth + 1) * col, margin + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
+                                bricksGrid[row, col] = new Brick(brickMarginLeftRight + (brickWidth + 1) * col, brickMarginTop + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
 
                                 int newR = Math.Max(0, Math.Min(255, randomColor.R + random.Next(-20, 21)));
                                 int newG = Math.Max(0, Math.Min(255, randomColor.G + random.Next(-20, 21)));
@@ -208,8 +212,8 @@ namespace Arkanoid
                         {
                             if (random.Next(0,3) == 1)
                             {
-                                bricksGrid[row, col] = new Brick(margin + (brickWidth + 1) * col, margin + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
-                                bricksGrid[row, Columns - col - 1] = new Brick(margin + (brickWidth + 1) * (Columns - col - 1), margin + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
+                                bricksGrid[row, col] = new Brick(brickMarginLeftRight + (brickWidth + 1) * col, brickMarginTop + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
+                                bricksGrid[row, Columns - col - 1] = new Brick(brickMarginLeftRight + (brickWidth + 1) * (Columns - col - 1), brickMarginTop + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
 
                                 int newR = Math.Max(0, Math.Min(255, randomColor.R + random.Next(-20, 21)));
                                 int newG = Math.Max(0, Math.Min(255, randomColor.G + random.Next(-20, 21)));
@@ -230,7 +234,7 @@ namespace Arkanoid
 
                         if (Columns % 2 == 1)
                             if (random.Next(0, 2) == 1)
-                                bricksGrid[row, Columns / 2] = new Brick(margin + (brickWidth + 1) * (Columns - Columns / 2 - 1), margin + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
+                                bricksGrid[row, Columns / 2] = new Brick(brickMarginLeftRight + (brickWidth + 1) * (Columns - Columns / 2 - 1), brickMarginTop + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
                     }
                     break;
                 default:
@@ -262,6 +266,9 @@ namespace Arkanoid
             foreach (Brick brick in bricksGrid)
                 if (brick != null)
                     brick.ChangeSize(xRatio, yRatio);
+
+            this.xRatio = xRatio;
+            this.yRatio = yRatio;
         }
     }
 }

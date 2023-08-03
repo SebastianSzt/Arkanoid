@@ -73,9 +73,9 @@ namespace Arkanoid
             Random random = new Random();
 
             int randomDirection = random.Next(2) == 0 ? -1 : 1;
-            GameGrid = new Grid(originalPanelWidth, originalPanelHeight, 18, 13);
+            GameGrid = new Grid(originalPanelWidth, originalPanelHeight, 16, 11);
             GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
-            GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 15), -12, GameGrid, GamePaddle);
+            GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 15), -5, GameGrid, GamePaddle);
         }
 
         public void DrawGameObjects(PaintEventArgs e)
@@ -88,6 +88,7 @@ namespace Arkanoid
         public void MakeTick()
         {
             GameBall.Move();
+            points += GameBall.CheckColisionWithBricks();
             GameBall.CheckColisionWithPaddle();
             GameBall.CheckColisionWithWalls();
             CheckGameWin();
@@ -98,9 +99,10 @@ namespace Arkanoid
         {
             if (GameGrid.CheckLevelEnd())
             {
-                currentLevel++;
-                if (currentLevel <= levels)
+                if (currentLevel < levels)
                 {
+                    points += 1000;
+                    currentLevel++;
                     levelStart = true;
 
                     GameGrid.CreateNextLevel();
@@ -108,7 +110,7 @@ namespace Arkanoid
                     Random random = new Random();
                     int randomDirection = random.Next(2) == 0 ? -1 : 1;
                     GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
-                    GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 15), -14, GameGrid, GamePaddle);
+                    GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 15), -5, GameGrid, GamePaddle);
                 }
                 else
                     gameWin = true;
@@ -127,7 +129,7 @@ namespace Arkanoid
                     Random random = new Random();
                     int randomDirection = random.Next(2) == 0 ? -1 : 1;
                     GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
-                    GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 15), -14, GameGrid, GamePaddle);
+                    GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(4, 15), -5, GameGrid, GamePaddle);
                 }
                 else
                     gameOver = true;

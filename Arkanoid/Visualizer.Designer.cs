@@ -213,7 +213,7 @@
             // 
             // BallTimer
             // 
-            BallTimer.Interval = 60;
+            BallTimer.Interval = 200;
             BallTimer.Tick += BallTimer_Tick;
             // 
             // Border

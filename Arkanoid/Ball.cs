@@ -7,6 +7,8 @@ using System.Drawing;
 using System.Security.Policy;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using System.Drawing.Printing;
+using System.Diagnostics;
 
 namespace Arkanoid
 {
@@ -114,25 +116,79 @@ namespace Arkanoid
             }
         }
 
-        public void CheckColisionWithBricks()
+        public int CheckColisionWithBricks()
         {
+            int points = 0;
+            RectangleF ballRect = new RectangleF(posX, posY, width, height);
 
+            for (int row = 0; row < GameGrid.Rows; row++)
+            {
+                for (int col = 0; col < GameGrid.Columns; col++)
+                {
+                    if (GameGrid[row, col] != null)
+                    {
+                        Brick brick = GameGrid[row, col];
+                        Rectangle brickRect = new Rectangle(brick.BrickPosX, brick.BrickPosY, brick.BrickWidth, brick.BrickHeight);
+
+                        if (ballRect.IntersectsWith(brickRect))
+                        {
+                            points += 50;
+
+                            if (vX > 0 && posX < brick.BrickPosX && posY + height * 2 / 3 > brick.BrickPosY && posY + height / 3 < brick.BrickPosY + brick.BrickWidth)
+                            {
+                                Debug.WriteLine("Interakcja lewo");
+                                posX = brick.BrickPosX - width;
+                                posY += -vY / 2; 
+                                vX = -Math.Abs(vX);
+                            }
+                            else if (vX < 0 && posX + width > brick.BrickPosX + brick.BrickWidth && posY + height * 2 / 3 > brick.BrickPosY && posY + height / 3 < brick.BrickPosY + brick.BrickWidth)
+                            {
+                                Debug.WriteLine("Interakcja prawo");
+                                posX = brick.BrickPosX + brick.BrickWidth;
+                                posY += -vY / 2;
+                                vX = Math.Abs(vX);
+                            }
+                            else if (vY < 0 && posY + height > brick.BrickPosY + brick.BrickHeight)
+                            {
+                                Debug.WriteLine("Interakcja dol");
+                                posX += -vX / 2;
+                                posY = brick.BrickPosY + brick.BrickHeight;
+                                vY = Math.Abs(vY);
+                            }
+                            else if (vY > 0 && posY <= brick.BrickPosY)
+                            {
+                                Debug.WriteLine("Interakcja gora");
+                                posX += -vX / 2;
+                                posY = brick.BrickPosY - height;
+                                vY = -Math.Abs(vY);
+                            }
+                            else
+                            {
+                                Debug.WriteLine("Nie zareagowało");
+                            }
+
+                            GameGrid[row, col] = null;
+                        }
+                    }
+                }
+            }
+            return points;
         }
 
         public void CheckColisionWithWalls()
         {
-            if (posX + vX < 0)
+            if (posX < 0)
             {
                 posX = 0;
                 vX = -vX;
             }
-            else if (posX + width + vX > panelWidth)
+            else if (posX + width > panelWidth)
             {
                 posX = panelWidth - width;
                 vX = -vX;
             }
 
-            if (posY + vY < 0)
+            if (posY < 0)
             {
                 posY = 0;
                 vY = -vY;
