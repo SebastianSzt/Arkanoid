@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace Arkanoid
 {
+    [Serializable]
     public class GameObject : IGameObject
     {
         protected int posX;

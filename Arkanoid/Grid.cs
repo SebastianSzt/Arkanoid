@@ -12,6 +12,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace Arkanoid
 {
+    [Serializable]
     internal class Grid
     {
         private int panelWidth;
@@ -125,6 +126,9 @@ namespace Arkanoid
                             if (random.NextDouble() < 0.75)
                             {
                                 Color randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+                                if (randomColor == Color.FromArgb(35, 35, 35))
+                                    randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+
                                 bricksGrid[row, col] = new Brick(margin + (brickWidth + 1) * col, margin + (brickHeight + 1) * row, brickWidth, brickHeight, randomColor);
                             }
                         }
@@ -136,6 +140,8 @@ namespace Arkanoid
                         if (random.NextDouble() < 0.7)
                         {
                             Color randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+                            if (randomColor == Color.FromArgb(35, 35, 35))
+                                randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
 
                             for (int col = 0; col < Columns; col++)
                             {
@@ -146,6 +152,15 @@ namespace Arkanoid
                                 int newB = Math.Max(0, Math.Min(255, randomColor.B + random.Next(-20, 21)));
 
                                 randomColor = Color.FromArgb(newR, newG, newB);
+
+                                if (randomColor == Color.FromArgb(35, 35, 35))
+                                {
+                                    newR = Math.Max(0, Math.Min(255, randomColor.R + random.Next(-20, 21)));
+                                    newG = Math.Max(0, Math.Min(255, randomColor.G + random.Next(-20, 21)));
+                                    newB = Math.Max(0, Math.Min(255, randomColor.B + random.Next(-20, 21)));
+
+                                    randomColor = Color.FromArgb(newR, newG, newB);
+                                }
                             }
                         }
                     }
@@ -156,6 +171,8 @@ namespace Arkanoid
                         if (random.NextDouble() < 0.7)
                         {
                             Color randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+                            if (randomColor == Color.FromArgb(35, 35, 35))
+                                randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
 
                             for (int row = 0; row < Rows; row++)
                             {
@@ -166,6 +183,15 @@ namespace Arkanoid
                                 int newB = Math.Max(0, Math.Min(255, randomColor.B + random.Next(-20, 21)));
 
                                 randomColor = Color.FromArgb(newR, newG, newB);
+
+                                if (randomColor == Color.FromArgb(35, 35, 35))
+                                {
+                                    newR = Math.Max(0, Math.Min(255, randomColor.R + random.Next(-20, 21)));
+                                    newG = Math.Max(0, Math.Min(255, randomColor.G + random.Next(-20, 21)));
+                                    newB = Math.Max(0, Math.Min(255, randomColor.B + random.Next(-20, 21)));
+
+                                    randomColor = Color.FromArgb(newR, newG, newB);
+                                }
                             }
                         }
                     }
@@ -174,7 +200,10 @@ namespace Arkanoid
                 case 5:
                     for (int row = 0; row < Rows; row++)
                     {
-                        Color randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256)); 
+                        Color randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+                        if (randomColor == Color.FromArgb(35, 35, 35))
+                            randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+
                         for (int col = 0; col < Columns / 2; col++)
                         {
                             if (random.Next(0,3) == 1)
@@ -187,6 +216,15 @@ namespace Arkanoid
                                 int newB = Math.Max(0, Math.Min(255, randomColor.B + random.Next(-20, 21)));
 
                                 randomColor = Color.FromArgb(newR, newG, newB);
+
+                                if (randomColor == Color.FromArgb(35, 35, 35))
+                                {
+                                    newR = Math.Max(0, Math.Min(255, randomColor.R + random.Next(-20, 21)));
+                                    newG = Math.Max(0, Math.Min(255, randomColor.G + random.Next(-20, 21)));
+                                    newB = Math.Max(0, Math.Min(255, randomColor.B + random.Next(-20, 21)));
+
+                                    randomColor = Color.FromArgb(newR, newG, newB);
+                                }
                             }
                         }
 

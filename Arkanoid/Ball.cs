@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 
 namespace Arkanoid
 {
+    [Serializable]
     internal class Ball : GameObject
     {
         private int panelWidth;
@@ -18,9 +19,8 @@ namespace Arkanoid
         private int vX;
         private int vY;
 
+        private Grid GameGrid;
         private Paddle GamePaddle;
-
-        Random random = new Random();
 
         public int BallWidth { get { return width; } }
         public int BallHeight { get { return height; } }
@@ -37,7 +37,7 @@ namespace Arkanoid
             } 
         }
 
-        public Ball(int panelWidth, int panelHeight, int posX, int posY, int width, int height, Color color, int vX, int vY, Paddle GamePaddle) : base(posX, posY, width, height, color) 
+        public Ball(int panelWidth, int panelHeight, int posX, int posY, int width, int height, Color color, int vX, int vY, Grid GameGrid, Paddle GamePaddle) : base(posX, posY, width, height, color) 
         {
             this.panelWidth = panelWidth;
             this.panelHeight = panelHeight;
@@ -45,6 +45,7 @@ namespace Arkanoid
             this.vX = vX;
             this.vY = vY;
             
+            this.GameGrid = GameGrid;
             this.GamePaddle = GamePaddle;
         }
 
@@ -100,6 +101,8 @@ namespace Arkanoid
                 }
                 else
                 {
+                    Random random = new Random();
+
                     posY = GamePaddle.PaddlePosY - height;
                    
                     if ((vX < 0 && GamePaddle.PaddleVX < 0) || (vX > 0 && GamePaddle.PaddleVX > 0))
@@ -109,6 +112,11 @@ namespace Arkanoid
                     vY = -vY;
                 }
             }
+        }
+
+        public void CheckColisionWithBricks()
+        {
+
         }
 
         public void CheckColisionWithWalls()

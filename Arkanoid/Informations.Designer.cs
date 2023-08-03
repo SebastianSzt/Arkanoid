@@ -37,6 +37,7 @@
             Control1b = new System.Windows.Forms.Label();
             Control2 = new System.Windows.Forms.Label();
             Control3 = new System.Windows.Forms.Label();
+            levelDesignInfo = new System.Windows.Forms.Label();
             SuspendLayout();
             // 
             // AuthorInfo
@@ -68,7 +69,7 @@
             ControlsInfo.AutoSize = true;
             ControlsInfo.Font = new System.Drawing.Font("Unispace", 11.9999981F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             ControlsInfo.ForeColor = System.Drawing.Color.White;
-            ControlsInfo.Location = new System.Drawing.Point(19, 117);
+            ControlsInfo.Location = new System.Drawing.Point(19, 227);
             ControlsInfo.Margin = new System.Windows.Forms.Padding(10, 20, 10, 10);
             ControlsInfo.Name = "ControlsInfo";
             ControlsInfo.Size = new System.Drawing.Size(119, 19);
@@ -80,7 +81,7 @@
             Control1.AutoSize = true;
             Control1.Font = new System.Drawing.Font("Unispace", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             Control1.ForeColor = System.Drawing.Color.White;
-            Control1.Location = new System.Drawing.Point(19, 151);
+            Control1.Location = new System.Drawing.Point(19, 261);
             Control1.Margin = new System.Windows.Forms.Padding(10, 5, 5, 5);
             Control1.Name = "Control1";
             Control1.Size = new System.Drawing.Size(197, 18);
@@ -92,7 +93,7 @@
             Control1a.AutoSize = true;
             Control1a.Font = new System.Drawing.Font("Unispace", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             Control1a.ForeColor = System.Drawing.Color.White;
-            Control1a.Location = new System.Drawing.Point(231, 151);
+            Control1a.Location = new System.Drawing.Point(231, 261);
             Control1a.Margin = new System.Windows.Forms.Padding(10, 5, 5, 5);
             Control1a.Name = "Control1a";
             Control1a.Size = new System.Drawing.Size(80, 18);
@@ -104,7 +105,7 @@
             Control1b.AutoSize = true;
             Control1b.Font = new System.Drawing.Font("Unispace", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             Control1b.ForeColor = System.Drawing.Color.White;
-            Control1b.Location = new System.Drawing.Point(326, 151);
+            Control1b.Location = new System.Drawing.Point(326, 261);
             Control1b.Margin = new System.Windows.Forms.Padding(10, 5, 5, 5);
             Control1b.Name = "Control1b";
             Control1b.Size = new System.Drawing.Size(89, 18);
@@ -116,7 +117,7 @@
             Control2.AutoSize = true;
             Control2.Font = new System.Drawing.Font("Unispace", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             Control2.ForeColor = System.Drawing.Color.White;
-            Control2.Location = new System.Drawing.Point(19, 179);
+            Control2.Location = new System.Drawing.Point(19, 289);
             Control2.Margin = new System.Windows.Forms.Padding(10, 5, 5, 5);
             Control2.Name = "Control2";
             Control2.Size = new System.Drawing.Size(215, 18);
@@ -128,19 +129,32 @@
             Control3.AutoSize = true;
             Control3.Font = new System.Drawing.Font("Unispace", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             Control3.ForeColor = System.Drawing.Color.White;
-            Control3.Location = new System.Drawing.Point(19, 207);
+            Control3.Location = new System.Drawing.Point(19, 317);
             Control3.Margin = new System.Windows.Forms.Padding(10, 5, 5, 20);
             Control3.Name = "Control3";
             Control3.Size = new System.Drawing.Size(269, 18);
             Control3.TabIndex = 7;
             Control3.Text = "SPACJA - Pauza/Wznowienie gry";
             // 
+            // levelDesignInfo
+            // 
+            levelDesignInfo.AutoSize = true;
+            levelDesignInfo.Font = new System.Drawing.Font("Unispace", 9.749999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            levelDesignInfo.ForeColor = System.Drawing.Color.White;
+            levelDesignInfo.Location = new System.Drawing.Point(19, 107);
+            levelDesignInfo.Margin = new System.Windows.Forms.Padding(10);
+            levelDesignInfo.Name = "levelDesignInfo";
+            levelDesignInfo.Size = new System.Drawing.Size(447, 90);
+            levelDesignInfo.TabIndex = 8;
+            levelDesignInfo.Text = resources.GetString("levelDesignInfo.Text");
+            // 
             // Informations
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(25, 25, 25);
-            ClientSize = new System.Drawing.Size(487, 254);
+            ClientSize = new System.Drawing.Size(487, 364);
+            Controls.Add(levelDesignInfo);
             Controls.Add(Control3);
             Controls.Add(Control2);
             Controls.Add(Control1b);
@@ -168,5 +182,6 @@
         private System.Windows.Forms.Label Control1b;
         private System.Windows.Forms.Label Control2;
         private System.Windows.Forms.Label Control3;
+        private System.Windows.Forms.Label levelDesignInfo;
     }
 }

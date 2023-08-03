@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -102,10 +103,15 @@ namespace Arkanoid
 
         private void NewGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            BallTimer.Stop();
             _ResetMovement();
-            startLabel.Visible = true;
+            if (BallTimer.Enabled)
+            {
+                BallTimer.Stop();
+                pauseLabel.Visible = true;
+            }
+
             pauseLabel.Visible = false;
+            startLabel.Visible = true;
             gameOverLabel.Visible = false;
             gameWinLabel.Visible = false;
             GameManager = new GameManager(GamePanel.Width, GamePanel.Height, GameManager.LifesValue, GameManager.LevelsValue, GameManager.BallAccelerationIntervalValue, xRatio, yRatio);
@@ -312,6 +318,85 @@ namespace Arkanoid
 
                 GameManager.ChangeObjectsSize(xRatio, yRatio);
             }
+        }
+
+        private void SaveGame(object sender, EventArgs e)
+        {
+            _ResetMovement();
+            if (BallTimer.Enabled)
+            {
+                BallTimer.Stop();
+                pauseLabel.Visible = true;
+            }
+
+            Stream stream = new FileStream("save.bin", FileMode.Create);
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(stream, GameManager);
+            stream.Close();
+
+            StreamWriter writer = new StreamWriter("save.txt");
+            writer.WriteLine(this.Width);
+            writer.WriteLine(this.Height);
+            writer.WriteLine(timeCounter);
+            writer.Close();
+
+            if (!LoadToolStripMenuItem.Enabled)
+                LoadToolStripMenuItem.Enabled = true;
+        }
+
+        private void LoadGame(object sender, EventArgs e)
+        {
+            _ResetMovement();
+            if (BallTimer.Enabled)
+            {
+                BallTimer.Stop();
+            }
+
+            Stream stream = new FileStream("save.bin", FileMode.Open);
+            BinaryFormatter formatter = new BinaryFormatter();
+            GameManager = (GameManager)formatter.Deserialize(stream);
+            stream.Close();
+
+            StreamReader reader = new StreamReader("save.txt");
+            this.Width = int.Parse(reader.ReadLine());
+            this.Height = int.Parse(reader.ReadLine());
+            timeCounter = double.Parse(reader.ReadLine());
+            reader.Close();
+
+            if (GameManager.RoundStartStatus)
+            {
+                pauseLabel.Visible = false;
+                startLabel.Visible = true;
+                gameOverLabel.Visible = false;
+                gameWinLabel.Visible = false;
+            }
+            else if (GameManager.GameOverStatus)
+            {
+                pauseLabel.Visible = false;
+                startLabel.Visible = false;
+                gameOverLabel.Visible = true;
+                gameWinLabel.Visible = false;
+            }
+            else if (GameManager.GameWinStatus)
+            {
+                pauseLabel.Visible = false;
+                startLabel.Visible = false;
+                gameOverLabel.Visible = false;
+                gameWinLabel.Visible = true;
+            }
+            else
+            {
+                pauseLabel.Visible = true;
+                startLabel.Visible = false;
+                gameOverLabel.Visible = false;
+                gameWinLabel.Visible = false;
+            }
+
+            RefreshEnvironment();
+
+            Visualizer_Resize(sender, e);
+
+            GamePanel.Refresh();
         }
     }
 }

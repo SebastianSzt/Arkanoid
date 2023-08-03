@@ -187,6 +187,7 @@
             SaveToolStripMenuItem.Name = "SaveToolStripMenuItem";
             SaveToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
             SaveToolStripMenuItem.Text = "Zapisz grę";
+            SaveToolStripMenuItem.Click += SaveGame;
             // 
             // LoadToolStripMenuItem
             // 
@@ -194,6 +195,7 @@
             LoadToolStripMenuItem.Name = "LoadToolStripMenuItem";
             LoadToolStripMenuItem.Size = new System.Drawing.Size(89, 20);
             LoadToolStripMenuItem.Text = "Wczytaj zapis";
+            LoadToolStripMenuItem.Click += LoadGame;
             // 
             // SettingsToolStripMenuItem
             // 

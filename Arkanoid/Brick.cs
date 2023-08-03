@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace Arkanoid
 {
+    [Serializable]
     internal class Brick : GameObject
     {
         public Brick(int posX, int posY, int width, int height, Color color) : base(posX, posY, width, height, color) { }

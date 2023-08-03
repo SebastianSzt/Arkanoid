@@ -9,6 +9,7 @@ using System.Windows.Forms;
 
 namespace Arkanoid
 {
+    [Serializable]
     internal class Paddle : GameObject
     {
         private int panelWidth;
