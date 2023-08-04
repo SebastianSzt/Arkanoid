@@ -11,12 +11,21 @@ namespace Arkanoid
     [Serializable]
     internal class Brick : GameObject
     {
+        private int row;
+        private int column;
+
+        public int BrickRow { get { return row; } }
+        public int BrickColumn { get { return column; } }
         public int BrickPosX { get { return posX; } }
         public int BrickPosY { get { return posY; } }
         public int BrickWidth { get { return width; } }
         public int BrickHeight { get { return height; } }
 
-        public Brick(int posX, int posY, int width, int height, Color color) : base(posX, posY, width, height, color) { }
+        public Brick(int row, int column, int posX, int posY, int width, int height, Color color) : base(posX, posY, width, height, color) 
+        { 
+            this.row = row;
+            this.column = column;
+        }
 
         public override void Draw(PaintEventArgs e)
         {

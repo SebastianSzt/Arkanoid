@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.Drawing.Printing;
 using System.Diagnostics;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace Arkanoid
 {
@@ -75,29 +76,33 @@ namespace Arkanoid
             RectangleF ballRect = new RectangleF(posX - 1, posY - 1, width + 2, height + 2);
             Rectangle paddleRect = new Rectangle(GamePaddle.PaddlePosX - 1, GamePaddle.PaddlePosY - 1, GamePaddle.PaddleWidth + 2, GamePaddle.PaddleHeight + 2);
 
-            double paddleFriction = 0.3;
+            double paddlePower = 0.3;
 
             if (ballRect.IntersectsWith(paddleRect))
             {
-                if (posX + width / 2 <= GamePaddle.PaddlePosX && posY + height / 4 >= GamePaddle.PaddlePosY)
+                if (posX < GamePaddle.PaddlePosX + GamePaddle.PaddleWidth / 2 && posY + height * 3 / 4 >= GamePaddle.PaddlePosY)
                 {
+                    //Debug.WriteLine("Interakcja lewo");
                     posX = GamePaddle.PaddlePosX - width;
+                    posY += -vY / 2;
 
                     if (vX < 0 && GamePaddle.PaddleVX < 0)
-                        vX = vX + (int)Math.Round((1.0f - paddleFriction) * GamePaddle.PaddleVX);
+                        vX = vX + (int)Math.Round((1.0f - paddlePower) * GamePaddle.PaddleVX);
                     else if (vX > 0 && GamePaddle.PaddleVX < 0)
-                        vX = -vX + (int)Math.Round(paddleFriction * GamePaddle.PaddleVX);
+                        vX = -vX + (int)Math.Round(paddlePower * GamePaddle.PaddleVX);
                     else
                         vX = -vX;
                 }
-                else if (posX + width / 2 >= GamePaddle.PaddlePosX + GamePaddle.PaddleWidth && posY + height / 4 >= GamePaddle.PaddlePosY)
+                else if (posX + width > GamePaddle.PaddlePosX + GamePaddle.PaddleWidth / 2 && posY + height * 3 / 4 >= GamePaddle.PaddlePosY)
                 {
+                    //Debug.WriteLine("Interakcja Prawo");
                     posX = GamePaddle.PaddlePosX + GamePaddle.PaddleWidth;
+                    posY += -vY / 2;
 
                     if (vX < 0 && GamePaddle.PaddleVX > 0)
-                        vX = -vX + (int)Math.Round(paddleFriction * GamePaddle.PaddleVX);
+                        vX = -vX + (int)Math.Round(paddlePower * GamePaddle.PaddleVX);
                     else if (vX > 0 && GamePaddle.PaddleVX > 0)
-                        vX = vX + (int)Math.Round((1.0f - paddleFriction) * GamePaddle.PaddleVX);
+                        vX = vX + (int)Math.Round((1.0f - paddlePower) * GamePaddle.PaddleVX);
                     else
                         vX = -vX;
                 }
@@ -105,12 +110,15 @@ namespace Arkanoid
                 {
                     Random random = new Random();
 
+                    posX += -vX / 2;
                     posY = GamePaddle.PaddlePosY - height;
                    
                     if ((vX < 0 && GamePaddle.PaddleVX < 0) || (vX > 0 && GamePaddle.PaddleVX > 0))
-                        vX = vX + (int)Math.Round((random.NextDouble() * 0.3 + 0.2) * GamePaddle.PaddleVX);
+                        vX += (int)Math.Round((random.NextDouble() * 0.10 + 0.05) * vX);
                     else if ((vX < 0 && GamePaddle.PaddleVX > 0) || (vX > 0 && GamePaddle.PaddleVX < 0))
-                        vX = -vX - (int)Math.Round((random.NextDouble() * 0.3 + 0.3) * GamePaddle.PaddleVX);
+                        vX = -vX + (int)Math.Round((random.NextDouble() * 0.25 + 0.10) * vX);
+                    else
+                        vX = vX + (int)Math.Round((random.NextDouble() * 0.35 - 0.10) * vX);
                     vY = -vY;
                 }
             }
@@ -119,7 +127,9 @@ namespace Arkanoid
         public int CheckColisionWithBricks()
         {
             int points = 0;
-            RectangleF ballRect = new RectangleF(posX, posY, width, height);
+            RectangleF ballRect = new RectangleF(posX - 1, posY - 1, width + 2, height + 2);
+
+            Queue<Brick> collidingBricks = new Queue<Brick>();
 
             for (int row = 0; row < GameGrid.Rows; row++)
             {
@@ -131,47 +141,78 @@ namespace Arkanoid
                         Rectangle brickRect = new Rectangle(brick.BrickPosX, brick.BrickPosY, brick.BrickWidth, brick.BrickHeight);
 
                         if (ballRect.IntersectsWith(brickRect))
-                        {
-                            points += 50;
-
-                            if (vX > 0 && posX < brick.BrickPosX && posY + height * 2 / 3 > brick.BrickPosY && posY + height / 3 < brick.BrickPosY + brick.BrickWidth)
-                            {
-                                Debug.WriteLine("Interakcja lewo");
-                                posX = brick.BrickPosX - width;
-                                posY += -vY / 2; 
-                                vX = -Math.Abs(vX);
-                            }
-                            else if (vX < 0 && posX + width > brick.BrickPosX + brick.BrickWidth && posY + height * 2 / 3 > brick.BrickPosY && posY + height / 3 < brick.BrickPosY + brick.BrickWidth)
-                            {
-                                Debug.WriteLine("Interakcja prawo");
-                                posX = brick.BrickPosX + brick.BrickWidth;
-                                posY += -vY / 2;
-                                vX = Math.Abs(vX);
-                            }
-                            else if (vY < 0 && posY + height > brick.BrickPosY + brick.BrickHeight)
-                            {
-                                Debug.WriteLine("Interakcja dol");
-                                posX += -vX / 2;
-                                posY = brick.BrickPosY + brick.BrickHeight;
-                                vY = Math.Abs(vY);
-                            }
-                            else if (vY > 0 && posY <= brick.BrickPosY)
-                            {
-                                Debug.WriteLine("Interakcja gora");
-                                posX += -vX / 2;
-                                posY = brick.BrickPosY - height;
-                                vY = -Math.Abs(vY);
-                            }
-                            else
-                            {
-                                Debug.WriteLine("Nie zareagowało");
-                            }
-
-                            GameGrid[row, col] = null;
-                        }
+                            collidingBricks.Enqueue(brick);
                     }
                 }
             }
+
+            Brick closestBrick = null;
+            double closestDistance = double.MaxValue;
+
+            foreach (Brick brick in collidingBricks)
+            {
+                double distance = Math.Sqrt(Math.Pow(brick.BrickPosX  - posX, 2) + Math.Pow(brick.BrickPosY - posY, 2));
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestBrick = brick;
+                }
+            }
+
+            if (closestBrick != null)
+            {
+                Random random = new Random();
+
+                bool collisionHandled = false;
+
+                if (!collisionHandled && vX > 0 && posX < closestBrick.BrickPosX + closestBrick.BrickWidth / 2)
+                {
+                    if (posY + height * 2 / 3 >= closestBrick.BrickPosY && posY + height / 3 <= closestBrick.BrickPosY + closestBrick.BrickHeight)
+                    {
+                        //Debug.WriteLine("Interakcja lewo");
+                        posX = closestBrick.BrickPosX - width;
+                        posY += -vY / 2;
+                        vX = -Math.Abs(vX);
+                        collisionHandled = true;
+                    }
+                    //else
+                    //    Debug.WriteLine("Lewy nie reaguje");
+                }
+                if (!collisionHandled && vX < 0 && posX + width > closestBrick.BrickPosX + closestBrick.BrickWidth / 2)
+                {
+                    if (posY + height * 2 / 3 >= closestBrick.BrickPosY && posY + height / 3 <= closestBrick.BrickPosY + closestBrick.BrickHeight)
+                    {
+                        //Debug.WriteLine("Interakcja prawo");
+                        posX = closestBrick.BrickPosX + closestBrick.BrickWidth;
+                        posY += -vY / 2;
+                        vX = Math.Abs(vX);
+                        collisionHandled = true;
+                    }
+                    //else
+                    //    Debug.WriteLine("Prawy nie reaguje");
+                }
+                if (!collisionHandled && vY < 0 && posY + height > closestBrick.BrickPosY + closestBrick.BrickHeight / 2)
+                {
+                    //Debug.WriteLine("Interakcja dol");
+                    posX += -vX / 2;
+                    posY = closestBrick.BrickPosY + closestBrick.BrickHeight;
+                    vY = Math.Abs(vY);
+                    collisionHandled = true;
+                }
+                if (!collisionHandled && vY > 0 && posY <= closestBrick.BrickPosY + closestBrick.BrickHeight / 2)
+                {
+                    //Debug.WriteLine("Interakcja gora");
+                    posX += -vX / 2;
+                    posY = closestBrick.BrickPosY - height;
+                    vY = -Math.Abs(vY);
+                    collisionHandled = true;
+                }
+
+                points += 50;
+
+                GameGrid[closestBrick.BrickRow, closestBrick.BrickColumn] = null;
+            }
+
             return points;
         }
 
@@ -180,16 +221,19 @@ namespace Arkanoid
             if (posX < 0)
             {
                 posX = 0;
+                posY += -vY / 2;
                 vX = -vX;
             }
             else if (posX + width > panelWidth)
             {
                 posX = panelWidth - width;
+                posY += -vY / 2;
                 vX = -vX;
             }
 
             if (posY < 0)
             {
+                posX += -vX / 2;
                 posY = 0;
                 vY = -vY;
             }
