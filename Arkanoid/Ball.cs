@@ -76,58 +76,255 @@ namespace Arkanoid
             RectangleF ballRect = new RectangleF(posX - 1, posY - 1, width + 2, height + 2);
             Rectangle paddleRect = new Rectangle(GamePaddle.PaddlePosX - 1, GamePaddle.PaddlePosY - 1, GamePaddle.PaddleWidth + 2, GamePaddle.PaddleHeight + 2);
 
-            double paddlePower = 0.3;
-
             if (ballRect.IntersectsWith(paddleRect))
             {
-                if (posX < GamePaddle.PaddlePosX + GamePaddle.PaddleWidth / 2 && posY + height * 3 / 4 >= GamePaddle.PaddlePosY)
-                {
-                    //Debug.WriteLine("Interakcja lewo");
-                    posX = GamePaddle.PaddlePosX - width;
-                    posY += -vY / 2;
+                Random random = new Random();
 
-                    if (vX < 0 && GamePaddle.PaddleVX < 0)
-                        vX = vX + (int)Math.Round((1.0f - paddlePower) * GamePaddle.PaddleVX);
-                    else if (vX > 0 && GamePaddle.PaddleVX < 0)
-                        vX = -vX + (int)Math.Round(paddlePower * GamePaddle.PaddleVX);
-                    else
-                        vX = -vX;
-                }
-                else if (posX + width > GamePaddle.PaddlePosX + GamePaddle.PaddleWidth / 2 && posY + height * 3 / 4 >= GamePaddle.PaddlePosY)
+                double paddleBeta = (GamePaddle.PaddleWidth / 2.0) / (GamePaddle.PaddleHeight / 2.0);
+                double paddleAlpha = (GamePaddle.PaddleHeight / 2.0) / (GamePaddle.PaddleWidth / 2.0);
+                double ballBeta;
+                double ballAlpha;
+                if (Math.Abs((GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2.0)) - (posX + (width / 2.0))) == 0 || Math.Abs((GamePaddle.PaddlePosY + (GamePaddle.PaddleHeight / 2.0)) - (posY + (height / 2.0))) == 0)
                 {
-                    //Debug.WriteLine("Interakcja Prawo");
-                    posX = GamePaddle.PaddlePosX + GamePaddle.PaddleWidth;
-                    posY += -vY / 2;
-
-                    if (vX < 0 && GamePaddle.PaddleVX > 0)
-                        vX = -vX + (int)Math.Round(paddlePower * GamePaddle.PaddleVX);
-                    else if (vX > 0 && GamePaddle.PaddleVX > 0)
-                        vX = vX + (int)Math.Round((1.0f - paddlePower) * GamePaddle.PaddleVX);
-                    else
-                        vX = -vX;
+                    ballBeta = 0;
+                    ballAlpha = 0;
                 }
                 else
                 {
-                    Random random = new Random();
-
-                    posX += -vX / 2;
-                    posY = GamePaddle.PaddlePosY - height;
-                   
-                    if ((vX < 0 && GamePaddle.PaddleVX < 0) || (vX > 0 && GamePaddle.PaddleVX > 0))
-                        vX += (int)Math.Round((random.NextDouble() * 0.10 + 0.05) * vX);
-                    else if ((vX < 0 && GamePaddle.PaddleVX > 0) || (vX > 0 && GamePaddle.PaddleVX < 0))
-                        vX = -vX + (int)Math.Round((random.NextDouble() * 0.25 + 0.10) * vX);
-                    else
-                        vX = vX + (int)Math.Round((random.NextDouble() * 0.35 - 0.10) * vX);
-                    vY = -vY;
+                    ballBeta = Math.Abs((GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2.0)) - (posX + (width / 2.0))) / Math.Abs((GamePaddle.PaddlePosY + (GamePaddle.PaddleHeight / 2.0)) - (posY + (height / 2.0)));
+                    ballAlpha = Math.Abs((GamePaddle.PaddlePosY + (GamePaddle.PaddleHeight / 2.0)) - (posY + (height / 2.0))) / Math.Abs((GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2.0)) - (posX + (width / 2.0)));
                 }
+
+                if (ballBeta == 0 || ballAlpha == 0)
+                {
+                    if ((GamePaddle.PaddlePosY + (GamePaddle.PaddleHeight / 2)) == (posY + (height / 2)))
+                    {
+                        if ((posX + (width / 2)) < (GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)))
+                        {
+                            //Debug.WriteLine("Interakcja lewo równo");
+                            posX = GamePaddle.PaddlePosX - width;
+                            if (vX < 0 && GamePaddle.PaddleVX < 0)
+                                vX = vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else if (vX > 0 && GamePaddle.PaddleVX < 0)
+                                vX = -vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else
+                                vX = -vX;
+                        }
+                        else if ((posX + (width / 2)) > (GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)))
+                        {
+                            //Debug.WriteLine("Interakcja prawo równo");
+                            posX = GamePaddle.PaddlePosX + GamePaddle.PaddleWidth;
+                            if (vX < 0 && GamePaddle.PaddleVX > 0)
+                                vX = -vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else if (vX > 0 && GamePaddle.PaddleVX > 0)
+                                vX = vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else
+                                vX = -vX;
+                        }
+                    }
+                    else if ((GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)) == (posX + (width / 2)))
+                    {
+                        //Debug.WriteLine("Interakcja góra równo");
+                        posX += -vX / 2;
+                        posY = GamePaddle.PaddlePosY - height;
+
+                        if ((vX < 0 && GamePaddle.PaddleVX < 0) || (vX > 0 && GamePaddle.PaddleVX > 0))
+                            vX += (int)Math.Round((random.NextDouble() * 0.25 + 0.10) * vX);
+                        else if ((vX < 0 && GamePaddle.PaddleVX > 0) || (vX > 0 && GamePaddle.PaddleVX < 0))
+                            vX = -vX + (int)Math.Round((random.NextDouble() * 0.25 + 0.01) * vX);
+                        else
+                            vX = vX + (int)Math.Round((random.NextDouble() * 0.35 - 0.10) * vX);
+                        vY = -vY;
+                    }
+                }
+                else if (paddleBeta == ballBeta || paddleAlpha == ballAlpha)
+                {
+                    if ((posX + (width / 2)) < (GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)) && (posY + (height / 2)) < (GamePaddle.PaddlePosY + (GamePaddle.PaddleHeight / 2)))
+                    {
+                        if (vX > 0 && vY > 0)
+                        {
+                            //Debug.WriteLine("Interakcja lewy górny róg");
+                            posX = GamePaddle.PaddlePosX - width;
+                            posY = GamePaddle.PaddlePosY - height;
+                            if (GamePaddle.PaddleVX < 0)
+                                vX = -vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else
+                                vX = vX + (int)Math.Round((random.NextDouble() * 0.35 - 0.10) * vX);
+                            vY = - vY;
+                        }
+                        else
+                        {
+                            if (vY > 0)
+                            {
+                                //Debug.WriteLine("Interakcja lewy górny róg - góra");
+                                posX += -vX / 2;
+                                posY = GamePaddle.PaddlePosY - height;
+
+                                if (GamePaddle.PaddleVX < 0)
+                                    vX += (int)Math.Round((random.NextDouble() * 0.30 + 0.05) * vX);
+                                else if (GamePaddle.PaddleVX > 0)
+                                    vX = -vX + (int)Math.Round((random.NextDouble() * 0.25 + 0.01) * vX);
+                                else
+                                    vX = vX + (int)Math.Round((random.NextDouble() * 0.35 - 0.10) * vX);
+                                vY = -vY;
+                            }
+                        }
+                    }
+                    else if ((posX + (width / 2)) < (GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)) && (posY + (height / 2)) > (GamePaddle.PaddlePosY + (GamePaddle.PaddleHeight / 2)))
+                    {
+                        if (vX > 0)
+                        {
+                            //Debug.WriteLine("Interakcja lewy dolny róg - lewo");
+                            posX = GamePaddle.PaddlePosX - width;
+
+                            if (GamePaddle.PaddleVX < 0)
+                                vX = -vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else
+                                vX = -vX;
+                        }
+                    }
+                    else if ((posX + (width / 2)) > (GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)) && (posY + (height / 2)) < (GamePaddle.PaddlePosY + (GamePaddle.PaddleHeight / 2)))
+                    {
+                        if (vX < 0 && vY > 0)
+                        {
+                            //Debug.WriteLine("Interakcja prawy górny róg");
+                            posX = GamePaddle.PaddlePosX + GamePaddle.PaddleWidth;
+                            posY = GamePaddle.PaddlePosY - height;
+                            if (GamePaddle.PaddleVX < 0)
+                                vX += (int)Math.Round((random.NextDouble() * 0.30 + 0.05) * vX);
+                            else if (GamePaddle.PaddleVX > 0)
+                                vX = -vX + (int)Math.Round((random.NextDouble() * 0.25 + 0.01) * vX);
+                            else
+                                vX = vX + (int)Math.Round((random.NextDouble() * 0.35 - 0.10) * vX);
+                            vY = -vY;
+                        }
+                        else
+                        {
+                            if (vY > 0)
+                            {
+                                //Debug.WriteLine("Interakcja prawy górny róg - góra");
+                                posX += -vX / 2;
+                                posY = GamePaddle.PaddlePosY - height;
+                                if (GamePaddle.PaddleVX > 0)
+                                    vX += (int)Math.Round((random.NextDouble() * 0.30 + 0.05) * vX);
+                                else if (GamePaddle.PaddleVX < 0)
+                                    vX = -vX + (int)Math.Round((random.NextDouble() * 0.25 + 0.01) * vX);
+                                else
+                                    vX = vX + (int)Math.Round((random.NextDouble() * 0.35 - 0.10) * vX);
+                                vY = -vY;
+                            }
+                        }
+                    }
+                    else if ((posX + (width / 2)) > (GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)) && (posY + (height / 2)) > (GamePaddle.PaddlePosY + (GamePaddle.PaddleHeight / 2)))
+                    {
+                        if (vX < 0)
+                        {
+                            //Debug.WriteLine("Interakcja prawy dolny róg - prawo");
+                            posX = GamePaddle.PaddlePosX + GamePaddle.PaddleWidth;
+
+                            if (GamePaddle.PaddleVX > 0)
+                                vX = -vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else
+                                vX = -vX;
+                        }
+                    }
+                }
+                else if (ballBeta > paddleBeta)
+                {
+                    if ((posX + (width / 2)) < (GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)))
+                    {
+                        //Debug.WriteLine("Interakcja lewo");
+                        posX = GamePaddle.PaddlePosX - width;
+
+                        if (vX < 0 && GamePaddle.PaddleVX < 0)
+                            vX = vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                        else if (vX > 0 && GamePaddle.PaddleVX < 0)
+                            vX = -vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                        else
+                            vX = -vX;
+                    }
+                    else if ((posX + (width / 2)) > (GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)))
+                    {
+                        //Debug.WriteLine("Interakcja prawo");
+                        posX = GamePaddle.PaddlePosX + GamePaddle.PaddleWidth;
+
+                        if (vX < 0 && GamePaddle.PaddleVX > 0)
+                            vX = -vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                        else if (vX > 0 && GamePaddle.PaddleVX > 0)
+                            vX = vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                        else
+                            vX = -vX;
+                    }
+                    else
+                    {
+                        //Debug.WriteLine("Interakcja lewo / prawo - błąd narożnika");
+                        posX += -vX / 2;
+                        posY = GamePaddle.PaddlePosY - height;
+
+                        if (GamePaddle.PaddleVX > 0)
+                            vX += (int)Math.Round((random.NextDouble() * 0.30 + 0.05) * vX);
+                        else if (GamePaddle.PaddleVX < 0)
+                            vX = -vX + (int)Math.Round((random.NextDouble() * 0.25 + 0.01) * vX);
+                        else
+                            vX = vX + (int)Math.Round((random.NextDouble() * 0.35 - 0.10) * vX);
+                        vY = -vY;
+                    }
+                }
+                else if (ballAlpha > paddleAlpha && vY > 0)
+                {
+                    if ((posY + (height / 2)) < (GamePaddle.PaddlePosY + (GamePaddle.PaddleHeight / 2)))
+                    {
+                        //Debug.WriteLine("Interakcja góra");
+                        posX += -vX / 2;
+                        posY = GamePaddle.PaddlePosY - height;
+
+                        if ((vX < 0 && GamePaddle.PaddleVX < 0) || (vX > 0 && GamePaddle.PaddleVX > 0))
+                            vX += (int)Math.Round((random.NextDouble() * 0.30 + 0.05) * vX);
+                        else if ((vX < 0 && GamePaddle.PaddleVX > 0) || (vX > 0 && GamePaddle.PaddleVX < 0))
+                            vX = -vX + (int)Math.Round((random.NextDouble() * 0.25 + 0.01) * vX);
+                        else
+                            vX = vX + (int)Math.Round((random.NextDouble() * 0.35 - 0.10) * vX);
+                        vY = -vY;
+                    }
+                    else
+                    {
+                        if ((posX + (width / 2)) < (GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)))
+                        {
+                            //Debug.WriteLine("Interakcja lewo");
+                            posX = GamePaddle.PaddlePosX - width;
+
+                            if (vX < 0 && GamePaddle.PaddleVX < 0)
+                                vX = vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else if (vX > 0 && GamePaddle.PaddleVX < 0)
+                                vX = -vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else
+                                vX = -vX;
+                        }
+                        else if ((posX + (width / 2)) > (GamePaddle.PaddlePosX + (GamePaddle.PaddleWidth / 2)))
+                        {
+                            //Debug.WriteLine("Interakcja prawo");
+                            posX = GamePaddle.PaddlePosX + GamePaddle.PaddleWidth;
+
+                            if (vX < 0 && GamePaddle.PaddleVX > 0)
+                                vX = -vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else if (vX > 0 && GamePaddle.PaddleVX > 0)
+                                vX = vX + (int)Math.Round(0.5 * GamePaddle.PaddleVX);
+                            else
+                                vX = -vX;
+                        }
+                    }
+                }
+                //else
+                //{
+                //    Debug.WriteLine("Błąd");
+                //}
             }
         }
 
         public int CheckColisionWithBricks()
         {
             int points = 0;
-            RectangleF ballRect = new RectangleF(posX - 1, posY - 1, width + 2, height + 2);
+            RectangleF ballRect = new RectangleF(posX, posY, width, height);
 
             Queue<Brick> collidingBricks = new Queue<Brick>();
 
@@ -161,52 +358,245 @@ namespace Arkanoid
 
             if (closestBrick != null)
             {
-                Random random = new Random();
-
-                bool collisionHandled = false;
-
-                if (!collisionHandled && vX > 0 && posX < closestBrick.BrickPosX + closestBrick.BrickWidth / 2)
+                double brickBeta = (closestBrick.BrickWidth / 2.0) / (closestBrick.BrickHeight / 2.0);
+                double brickAlpha = (closestBrick.BrickHeight / 2.0) / (closestBrick.BrickWidth / 2.0);
+                double ballBeta;
+                double ballAlpha;
+                if (Math.Abs((closestBrick.BrickPosX + (closestBrick.BrickWidth / 2.0)) - (posX + (width / 2.0))) == 0 || Math.Abs((closestBrick.BrickPosY + (closestBrick.BrickHeight / 2.0)) - (posY + (height / 2.0))) == 0)
                 {
-                    if (posY + height * 2 / 3 >= closestBrick.BrickPosY && posY + height / 3 <= closestBrick.BrickPosY + closestBrick.BrickHeight)
+                    ballBeta = 0;
+                    ballAlpha = 0;
+                }
+                else
+                {
+                    ballBeta = Math.Abs((closestBrick.BrickPosX + (closestBrick.BrickWidth / 2.0)) - (posX + (width / 2.0))) / Math.Abs((closestBrick.BrickPosY + (closestBrick.BrickHeight / 2.0)) - (posY + (height / 2.0)));
+                    ballAlpha = Math.Abs((closestBrick.BrickPosY + (closestBrick.BrickHeight / 2.0)) - (posY + (height / 2.0))) / Math.Abs((closestBrick.BrickPosX + (closestBrick.BrickWidth / 2.0)) - (posX + (width / 2.0)));
+                }
+
+                if (ballBeta == 0 || ballAlpha == 0)
+                {
+                    if ((closestBrick.BrickPosY + (closestBrick.BrickHeight / 2)) == (posY + (height / 2)))
+                    {
+                        if (vX > 0)
+                        {
+                            //Debug.WriteLine("Interakcja lewo równo");
+                            posX = closestBrick.BrickPosX - width;
+                            posY += -vY / 2;
+                            vX = -vX;
+                        }
+                        else if (vX < 0)
+                        {
+                            //Debug.WriteLine("Interakcja prawo równo");
+                            posX = closestBrick.BrickPosX + closestBrick.BrickWidth;
+                            posY += -vY / 2;
+                            vX = -vX;
+                        }
+                    }
+                    else if ((closestBrick.BrickPosX + (closestBrick.BrickWidth / 2)) == (posX + (width / 2)))
+                    {
+                        if (vY > 0)
+                        {
+                            //Debug.WriteLine("Interakcja góra równo");
+                            posX += -vX / 2;
+                            posY = closestBrick.BrickPosY - height;
+                            vY = -vY;
+                        }
+                        else if (vY < 0)
+                        {
+                            //Debug.WriteLine("Interakcja dół równo");
+                            posX += -vX / 2;
+                            posY = closestBrick.BrickPosY + closestBrick.BrickHeight;
+                            vY = -vY;
+                        }
+                    }
+                }
+                else if (brickBeta == ballBeta || brickAlpha == ballAlpha)
+                {
+                    if ((posX + (width / 2)) < (closestBrick.BrickPosX + (closestBrick.BrickWidth / 2)) && (posY + (height / 2)) < (closestBrick.BrickPosY + (closestBrick.BrickHeight / 2)))
+                    {
+                        if (vX > 0 && vY > 0)
+                        {
+                            //Debug.WriteLine("Interakcja lewy górny róg");
+                            posX = closestBrick.BrickPosX - width;
+                            posY = closestBrick.BrickPosY - height;
+                            vX = -vX;
+                            vY = -vY;
+                        }
+                        else
+                        {
+                            if (vX > 0)
+                            {
+                                //Debug.WriteLine("Interakcja lewy górny róg - lewo");
+                                posX = closestBrick.BrickPosX - width;
+                                posY += -vY / 2;
+                                vX = -vX;
+                            }
+                            else if (vY > 0)
+                            {
+                                //Debug.WriteLine("Interakcja lewy górny róg - góra");
+                                posX += -vX / 2;
+                                posY = closestBrick.BrickPosY - height;
+                                vY = -vY;
+                            }
+                        }
+                    }
+                    else if ((posX + (width / 2)) < (closestBrick.BrickPosX + (closestBrick.BrickWidth / 2)) && (posY + (height / 2)) > (closestBrick.BrickPosY + (closestBrick.BrickHeight / 2)))
+                    {
+                        if (vX > 0 && vY < 0)
+                        {
+                            //Debug.WriteLine("Interakcja lewy dolny róg");
+                            posX = closestBrick.BrickPosX - width;
+                            posY = closestBrick.BrickPosY + closestBrick.BrickHeight;
+                            vX = -vX;
+                            vY = -vY;
+                        }
+                        else
+                        {
+                            if (vX > 0)
+                            {
+                                //Debug.WriteLine("Interakcja lewy dolny róg - lewo");
+                                posX = closestBrick.BrickPosX - width;
+                                posY += -vY / 2;
+                                vX = -vX;
+                            }
+                            else if (vY < 0)
+                            {
+                                //Debug.WriteLine("Interakcja lewy dolny róg - dół");
+                                posX += -vX / 2;
+                                posY = closestBrick.BrickPosY + closestBrick.BrickHeight;
+                                vY = -vY;
+                            }
+                        }
+                    }
+                    else if ((posX + (width / 2)) > (closestBrick.BrickPosX + (closestBrick.BrickWidth / 2)) && (posY + (height / 2)) < (closestBrick.BrickPosY + (closestBrick.BrickHeight / 2)))
+                    {
+                        if (vX < 0 && vY > 0)
+                        {
+                            //Debug.WriteLine("Interakcja prawy górny róg");
+                            posX = closestBrick.BrickPosX + closestBrick.BrickWidth;
+                            posY = closestBrick.BrickPosY - height;
+                            vX = -vX;
+                            vY = -vY;
+                        }
+                        else
+                        {
+                            if (vX < 0)
+                            {
+                                //Debug.WriteLine("Interakcja prawy górny róg - prawo");
+                                posX = closestBrick.BrickPosX + closestBrick.BrickWidth;
+                                posY += -vY / 2;
+                                vX = -vX;
+                            }
+                            else if (vY > 0)
+                            {
+                                //Debug.WriteLine("Interakcja prawy górny róg - góra");
+                                posX += -vX / 2;
+                                posY = closestBrick.BrickPosY - height;
+                                vY = -vY;
+                            }
+                        }
+                    }
+                    else if ((posX + (width / 2)) > (closestBrick.BrickPosX + (closestBrick.BrickWidth / 2)) && (posY + (height / 2)) > (closestBrick.BrickPosY + (closestBrick.BrickHeight / 2)))
+                    {
+                        if (vX > 0 && vY < 0)
+                        {
+                            //Debug.WriteLine("Interakcja prawy dolny róg");
+                            posX = closestBrick.BrickPosX + closestBrick.BrickWidth;
+                            posY = closestBrick.BrickPosY + closestBrick.BrickHeight;
+                            vX = -vX;
+                            vY = -vY;
+                        }
+                        else
+                        {
+                            if (vX < 0)
+                            {
+                                //Debug.WriteLine("Interakcja prawy dolny róg - prawo");
+                                posX = closestBrick.BrickPosX + closestBrick.BrickWidth;
+                                posY += -vY / 2;
+                                vX = -vX;
+                            }
+                            else if (vY < 0)
+                            {
+                                //Debug.WriteLine("Interakcja prawy dolny róg - dół");
+                                posX += -vX / 2;
+                                posY = closestBrick.BrickPosY + closestBrick.BrickHeight;
+                                vY = -vY;
+                            }
+                        }
+                    }
+                }
+                else if (ballBeta > brickBeta && vX > 0)
+                {
+                    if ((posX + (width / 2)) < (closestBrick.BrickPosX + (closestBrick.BrickWidth / 2)))
                     {
                         //Debug.WriteLine("Interakcja lewo");
                         posX = closestBrick.BrickPosX - width;
                         posY += -vY / 2;
-                        vX = -Math.Abs(vX);
-                        collisionHandled = true;
+                        vX = -vX;
                     }
-                    //else
-                    //    Debug.WriteLine("Lewy nie reaguje");
+                    else
+                    {
+                        //Debug.WriteLine("Interakcja lewo - błąd narożnika");
+                        posX += -vX / 2;
+                        posY += -vY / 2;
+                        vY = -vY;
+                    }
                 }
-                if (!collisionHandled && vX < 0 && posX + width > closestBrick.BrickPosX + closestBrick.BrickWidth / 2)
-                {
-                    if (posY + height * 2 / 3 >= closestBrick.BrickPosY && posY + height / 3 <= closestBrick.BrickPosY + closestBrick.BrickHeight)
+                else if (ballBeta > brickBeta && vX < 0)
+                { 
+                    if ((posX + (width / 2)) > (closestBrick.BrickPosX + (closestBrick.BrickWidth / 2)))
                     {
                         //Debug.WriteLine("Interakcja prawo");
                         posX = closestBrick.BrickPosX + closestBrick.BrickWidth;
                         posY += -vY / 2;
-                        vX = Math.Abs(vX);
-                        collisionHandled = true;
+                        vX = -vX;
                     }
-                    //else
-                    //    Debug.WriteLine("Prawy nie reaguje");
+                    else
+                    {
+                        //Debug.WriteLine("Interakcja prawo - błąd narożnika");
+                        posX += -vX / 2;
+                        posY += -vY / 2;
+                        vY = -vY;
+                    }
                 }
-                if (!collisionHandled && vY < 0 && posY + height > closestBrick.BrickPosY + closestBrick.BrickHeight / 2)
+                else if (ballAlpha > brickAlpha && vY > 0)
                 {
-                    //Debug.WriteLine("Interakcja dol");
-                    posX += -vX / 2;
-                    posY = closestBrick.BrickPosY + closestBrick.BrickHeight;
-                    vY = Math.Abs(vY);
-                    collisionHandled = true;
+                    if ((posY + (height / 2)) < (closestBrick.BrickPosY + (closestBrick.BrickHeight / 2)))
+                    {
+                        //Debug.WriteLine("Interakcja góra");
+                        posX += -vX / 2;
+                        posY = closestBrick.BrickPosY - height;
+                        vY = -vY;
+                    }
+                    else
+                    {
+                        //Debug.WriteLine("Interakcja góra - błąd narożnika");
+                        posX += -vX / 2;
+                        posY += -vY / 2;
+                        vX = -vX;
+                    }
                 }
-                if (!collisionHandled && vY > 0 && posY <= closestBrick.BrickPosY + closestBrick.BrickHeight / 2)
-                {
-                    //Debug.WriteLine("Interakcja gora");
-                    posX += -vX / 2;
-                    posY = closestBrick.BrickPosY - height;
-                    vY = -Math.Abs(vY);
-                    collisionHandled = true;
+                else if (ballAlpha > brickAlpha && vY < 0)
+                {    
+                    if ((posY + (height / 2)) > (closestBrick.BrickPosY + (closestBrick.BrickHeight / 2)))
+                    {
+                        //Debug.WriteLine("Interakcja dół");
+                        posX += -vX / 2;
+                        posY = closestBrick.BrickPosY + closestBrick.BrickHeight;
+                        vY = -vY;
+                    }
+                    else
+                    {
+                        //Debug.WriteLine("Interakcja dół - błąd narożnika");
+                        posX += -vX / 2;
+                        posY += -vY / 2;
+                        vX = -vX;
+                    }
                 }
+                //else
+                //{
+                //    Debug.WriteLine("Błąd");
+                //}
 
                 points += 50;
 

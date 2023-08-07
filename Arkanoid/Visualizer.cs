@@ -35,7 +35,7 @@ namespace Arkanoid
         {
             InitializeComponent();
 
-            GameManager = new GameManager(GamePanel.Width, GamePanel.Height, 2, 2, 45, xRatio, xRatio);
+            GameManager = new GameManager(GamePanel.Width, GamePanel.Height, 2, 2, 90, xRatio, xRatio);
 
             _movementTimer = new Timer { Interval = 50 };
             _movementTimer.Tick += _movementTimer_Tick;
