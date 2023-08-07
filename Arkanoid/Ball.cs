@@ -25,8 +25,11 @@ namespace Arkanoid
         private Grid GameGrid;
         private Paddle GamePaddle;
 
+        public int BallPosX { get { return posX; } }
+        public int BallPosY { get { return posY; } }
         public int BallWidth { get { return width; } }
         public int BallHeight { get { return height; } }
+        public int BallVY { get { return vY; } }
 
         public int AccelerateVY 
         { 
@@ -324,7 +327,7 @@ namespace Arkanoid
         public int CheckColisionWithBricks()
         {
             int points = 0;
-            RectangleF ballRect = new RectangleF(posX, posY, width, height);
+            RectangleF ballRect = new RectangleF(posX - 1, posY - 1, width + 2, height + 2);
 
             Queue<Brick> collidingBricks = new Queue<Brick>();
 
@@ -335,7 +338,7 @@ namespace Arkanoid
                     if (GameGrid[row, col] != null)
                     {
                         Brick brick = GameGrid[row, col];
-                        Rectangle brickRect = new Rectangle(brick.BrickPosX, brick.BrickPosY, brick.BrickWidth, brick.BrickHeight);
+                        Rectangle brickRect = new Rectangle(brick.BrickPosX - 1, brick.BrickPosY - 1, brick.BrickWidth + 2, brick.BrickHeight + 2);
 
                         if (ballRect.IntersectsWith(brickRect))
                             collidingBricks.Enqueue(brick);
@@ -543,7 +546,7 @@ namespace Arkanoid
                     }
                 }
                 else if (ballBeta > brickBeta && vX < 0)
-                { 
+                {
                     if ((posX + (width / 2)) > (closestBrick.BrickPosX + (closestBrick.BrickWidth / 2)))
                     {
                         //Debug.WriteLine("Interakcja prawo");
@@ -577,7 +580,7 @@ namespace Arkanoid
                     }
                 }
                 else if (ballAlpha > brickAlpha && vY < 0)
-                {    
+                {
                     if ((posY + (height / 2)) > (closestBrick.BrickPosY + (closestBrick.BrickHeight / 2)))
                     {
                         //Debug.WriteLine("Interakcja dół");
@@ -629,11 +632,51 @@ namespace Arkanoid
             }
         }
 
+        public int CheckColisionWithBricksNoBouncing()
+        {
+            int points = 0;
+            RectangleF ballRect = new RectangleF(posX, posY, width, height);
+
+            for (int row = 0; row < GameGrid.Rows; row++)
+            {
+                for (int col = 0; col < GameGrid.Columns; col++)
+                {
+                    if (GameGrid[row, col] != null)
+                    {
+                        Brick brick = GameGrid[row, col];
+                        Rectangle brickRect = new Rectangle(brick.BrickPosX, brick.BrickPosY, brick.BrickWidth, brick.BrickHeight);
+
+                        if (ballRect.IntersectsWith(brickRect))
+                        {
+                            points += 50;
+
+                            GameGrid[row, col] = null;
+                        }
+                    }
+                }
+            }
+
+            return points;
+        }
+
+        public bool CheckBallOnUpperWall()
+        {
+            if (posY + height <= 0)
+                return true;
+            return false;
+        }
+
         public bool CheckRoundFail()
         {
             if (posY + height >= panelHeight)
                 return true;
             return false;
+        }
+
+        public void MakeBigger()
+        {
+            width += 1;
+            height += 1;
         }
 
         public override void ChangeSize(float xRatio, float yRatio)
@@ -647,6 +690,12 @@ namespace Arkanoid
             vX = (int)Math.Round(Math.Round(vX / this.xRatio) * xRatio);
             vY = (int)Math.Round(Math.Round(vY / this.yRatio) * yRatio);
 
+            this.xRatio = xRatio;
+            this.yRatio = yRatio;
+        }
+
+        public void ChangeRatio(float xRatio, float yRatio)
+        {
             this.xRatio = xRatio;
             this.yRatio = yRatio;
         }

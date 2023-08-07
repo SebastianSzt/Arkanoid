@@ -178,7 +178,7 @@ namespace Arkanoid
             {
                 timeCounter -= GameManager.BallAccelerationIntervalValue;
 
-                GameManager.AccelerateBallVY = 1;
+                GameManager.AccelerateBallVY();
             }
 
             GameManager.MakeTick();

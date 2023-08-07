@@ -36,7 +36,6 @@ namespace Arkanoid
             brush.Dispose();
         }
 
-        
         public void SetDirection(Keys e, int velocity)
         {
             if (e == Keys.A)
@@ -58,6 +57,18 @@ namespace Arkanoid
                     posX = panelWidth - width;
                     vX = 0;
                 }
+            }
+        }
+
+        public void MakeBigger()
+        {
+            width += (int)(width * 0.05);
+            posX -= (int)(width * 0.025);
+
+            if (width > panelWidth)
+            {
+                width = panelWidth;
+                posX = 0;
             }
         }
 

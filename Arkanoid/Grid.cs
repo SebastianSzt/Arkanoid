@@ -69,6 +69,7 @@ namespace Arkanoid
             if (File.Exists(levelFileName))
             {
                 string[] lines = File.ReadAllLines(levelFileName);
+                int bricksAmmount = 0;
 
                 for (int row = 0; row < Rows; row++)
                 {
@@ -81,10 +82,15 @@ namespace Arkanoid
                             Color color;
                             if (col < words.Length && IsValidHexColor(words[col], out color))
                             {
+                                bricksAmmount++;
                                 bricksGrid[row, col] = new Brick(row, col, brickMarginLeftRight + (brickWidth + 1) * col, brickMarginTop + (brickHeight + 1) * row, brickWidth, brickHeight, color);
                             }
                         }
                     }
+                }
+                if (bricksAmmount == 0)
+                {
+                    GenerateLevel();
                 }
             }
             else

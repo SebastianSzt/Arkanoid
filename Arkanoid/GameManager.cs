@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Security.Policy;
 using System.Windows.Forms;
+using System.Security.Cryptography;
 
 namespace Arkanoid
 {
@@ -18,6 +19,7 @@ namespace Arkanoid
         private int points;
         private int lifes;
         private int levels;
+        private int bonusPoints;
         private int currentLifes;
         private int currentLevel;
 
@@ -33,7 +35,10 @@ namespace Arkanoid
 
         private Grid GameGrid;
         private Paddle GamePaddle;
-        private Ball GameBall;
+
+        private List<Ball> gameBallList = new List<Ball>();
+        private List<Bonus> bonusBubbleList = new List<Bonus>();
+        private List<Ball> specialBallList = new List<Ball>();
 
         public int PointsValue { get { return points; } }
         public int LifesValue { get { return lifes; } }
@@ -47,7 +52,6 @@ namespace Arkanoid
 
         public int ResetPaddleVX { get { return GamePaddle.PaddleVX; } set { GamePaddle.PaddleVX = 0; } }
         public int BallAccelerationIntervalValue { get { return ballAccelerationInterval; } }
-        public int AccelerateBallVY { get { return GameBall.AccelerateVY; } set { GameBall.AccelerateVY = (int)Math.Round(value * yRatio); } }
 
         public GameManager(int panelWidth, int panelHeight, int lifes, int level, int ballAccelerationInterval, float xRatio, float yRatio)
         {
@@ -57,6 +61,7 @@ namespace Arkanoid
             points = 0;
             this.lifes = lifes;
             this.levels = level;
+            bonusPoints = 0;
             currentLifes = lifes;
             currentLevel = 1;
 
@@ -70,27 +75,74 @@ namespace Arkanoid
             this.xRatio = xRatio;
             this.yRatio = yRatio;
 
-            Random random = new Random();
-
-            int randomDirection = random.Next(2) == 0 ? -1 : 1;
             GameGrid = new Grid(originalPanelWidth, originalPanelHeight, 14, 10);
             GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
-            GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 4), -2, GameGrid, GamePaddle);
+
+            Random random = new Random();
+            int randomDirection = random.Next(2) == 0 ? -1 : 1;
+            Ball GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 4), -2, GameGrid, GamePaddle);
+            gameBallList.Add(GameBall);
         }
 
         public void DrawGameObjects(PaintEventArgs e)
         {
             GameGrid.DrawBricks(e);
+            foreach (Bonus bubble in bonusBubbleList)
+            {
+                bubble.Draw(e);
+            }
+            foreach (Ball specialBall in specialBallList)
+            {
+                specialBall.Draw(e);
+            }
             GamePaddle.Draw(e);
-            GameBall.Draw(e);
+            foreach (Ball ball in gameBallList)
+            {
+                ball.Draw(e);
+            }
         }
 
         public void MakeTick()
         {
-            GameBall.Move();
-            points += GameBall.CheckColisionWithBricks();
-            GameBall.CheckColisionWithPaddle();
-            GameBall.CheckColisionWithWalls();
+            foreach (Ball ball in gameBallList)
+            {
+                ball.Move();
+                int newPoints = ball.CheckColisionWithBricks();
+                points += newPoints;
+                bonusPoints += newPoints;
+                if (bonusPoints >= 500)
+                {
+                    bonusPoints -= 500;
+                    GenerateBonusBubble();
+                }
+                ball.CheckColisionWithPaddle();
+                ball.CheckColisionWithWalls();
+            }
+    
+            for (int i = bonusBubbleList.Count - 1; i >= 0; i--)
+            {
+                Bonus bubble = bonusBubbleList[i];
+                bubble.Move();
+
+                if (bubble.CheckCollisionWithObjects())
+                {
+                    bonusBubbleList.RemoveAt(i);
+                    GenerateBonus();
+                }
+
+                if (bubble.CheckBubbleEnd())
+                    bonusBubbleList.RemoveAt(i);
+            }
+            for (int i = specialBallList.Count - 1; i >= 0; i--)
+            {
+                Ball specialBall = specialBallList[i];
+                specialBall.Move();
+                specialBall.CheckColisionWithBricksNoBouncing();
+
+                if (specialBall.CheckBallOnUpperWall())
+                    specialBallList.RemoveAt(i);
+            }
+
             CheckGameWin();
             CheckGameOver();
         }
@@ -109,10 +161,15 @@ namespace Arkanoid
 
                     GameGrid.CreateNextLevel();
 
+                    GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
+
+                    gameBallList.Clear();
                     Random random = new Random();
                     int randomDirection = random.Next(2) == 0 ? -1 : 1;
-                    GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
-                    GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 4), -2, GameGrid, GamePaddle);
+                    Ball GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 4), -2, GameGrid, GamePaddle);
+                    gameBallList.Add(GameBall);
+                    bonusBubbleList.Clear();
+                    specialBallList.Clear();
                 }
                 else
                     gameWin = true;
@@ -121,17 +178,28 @@ namespace Arkanoid
 
         private void CheckGameOver()
         {
-            if (GameBall.CheckRoundFail())
+            for (int i = gameBallList.Count - 1; i >= 0; i--)
+            {
+                Ball ball = gameBallList[i];
+                if (ball.CheckRoundFail())
+                    gameBallList.RemoveAt(i);
+            }
+            if (gameBallList.Count == 0)
             {
                 currentLifes--;
                 if (currentLifes > 0)
                 {
                     levelStart = true;
 
+                    GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
+
+                    gameBallList.Clear();
                     Random random = new Random();
                     int randomDirection = random.Next(2) == 0 ? -1 : 1;
-                    GamePaddle = new Paddle(originalPanelWidth, originalPanelWidth / 2 - 30, (int)(originalPanelHeight * 0.85) - 4, 60, 8, Color.White);
-                    GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 4), -2, GameGrid, GamePaddle);
+                    Ball GameBall = new Ball(originalPanelWidth, originalPanelHeight, originalPanelWidth / 2 - 5, (int)(originalPanelHeight * 0.85) - 14, 10, 10, Color.White, randomDirection * random.Next(2, 4), -2, GameGrid, GamePaddle);
+                    gameBallList.Add(GameBall);
+                    bonusBubbleList.Clear();
+                    specialBallList.Clear();
                 }
                 else
                     gameOver = true;
@@ -143,19 +211,94 @@ namespace Arkanoid
             GamePaddle.SetDirection(e, paddleVelocity);
             GamePaddle.Move();
             if (levelStart)
-                GameBall.PositionWithPaddle();
+                gameBallList[0].PositionWithPaddle();
+        }
+
+        private void GenerateBonusBubble()
+        {
+            Random random = new Random();
+            if (random.Next(0, 2) == 0)
+            {
+                Bonus bonusBubble = new Bonus(originalPanelWidth, originalPanelHeight, random.Next(0, originalPanelWidth - 19), 0, 20, 20, Color.FromArgb(random.Next(256), random.Next(256), random.Next(256)), GamePaddle, gameBallList, specialBallList);
+                bonusBubbleList.Add(bonusBubble);
+            }
+        }
+
+        private void GenerateBonus()
+        {
+            Random random = new Random();
+            int randomNumber = random.Next(0, 6);
+            if (randomNumber == 0)
+            {
+                currentLifes++;
+            }
+            else if (randomNumber == 1)
+            {
+                points += 500;
+            }
+            else if (randomNumber == 2)
+            {
+                Ball specialBall = new Ball(0, 0, 0, 0, 10, 10, Color.FromArgb(102, 255, 153), 0, -5, GameGrid, GamePaddle);
+                specialBall.PositionWithPaddle();
+                specialBallList.Add(specialBall);
+            }
+            else if (randomNumber == 3)
+            {
+                GamePaddle.MakeBigger();
+            }
+            else if (randomNumber == 4)
+            {
+                foreach (Ball ball in gameBallList)
+                {
+                    ball.MakeBigger();
+                }
+            }
+            else if (randomNumber == 5)
+            {
+                int ballNumber = random.Next(0, gameBallList.Count);
+                int randomDirectionVX = random.Next(2) == 0 ? -1 : 1;
+                int randomDirectionVY = random.Next(2) == 0 ? -1 : 1;
+                Ball nextBall = new Ball(originalPanelWidth, originalPanelHeight, gameBallList[ballNumber].BallPosX, gameBallList[ballNumber].BallPosY, gameBallList[ballNumber].BallWidth, gameBallList[ballNumber].BallHeight, Color.White, randomDirectionVX * random.Next(2, 4), randomDirectionVY * gameBallList[ballNumber].BallVY, GameGrid, GamePaddle);
+                nextBall.ChangeRatio(xRatio, yRatio);
+                gameBallList.Add(nextBall);
+                randomDirectionVX = random.Next(2) == 0 ? -1 : 1;
+                randomDirectionVY = random.Next(2) == 0 ? -1 : 1;
+                nextBall = new Ball(originalPanelWidth, originalPanelHeight, gameBallList[ballNumber].BallPosX, gameBallList[ballNumber].BallPosY, gameBallList[ballNumber].BallWidth, gameBallList[ballNumber].BallHeight, Color.White, randomDirectionVX * random.Next(2, 4), randomDirectionVY * gameBallList[ballNumber].BallVY, GameGrid, GamePaddle);
+                nextBall.ChangeRatio(xRatio, yRatio);
+                gameBallList.Add(nextBall);
+            }
+        }
+
+        public void AccelerateBallVY()
+        {
+            foreach (Ball ball in gameBallList)
+            {
+                ball.AccelerateVY = (int)Math.Round(1 * yRatio);
+            }
         }
 
         public void ChangeObjectsSize(float xRatio, float yRatio)
         {
             paddleVelocity = (int)Math.Round(14 * xRatio);
 
+            GameGrid.ChangeBricsSize(xRatio, yRatio);
+            GamePaddle.ChangeSize(xRatio, yRatio);
+
+            foreach (Ball ball in gameBallList)
+            {
+                ball.ChangeSize(xRatio, yRatio);
+            }
+            foreach (Bonus bubble in bonusBubbleList)
+            {
+                bubble.ChangeSize(xRatio, yRatio);
+            }
+            foreach (Ball specialBall in specialBallList)
+            {
+                specialBall.ChangeSize(xRatio, yRatio);
+            }
+
             this.xRatio = xRatio;
             this.yRatio = yRatio;
-
-            GameGrid.ChangeBricsSize(xRatio, yRatio);
-            GameBall.ChangeSize(xRatio, yRatio);
-            GamePaddle.ChangeSize(xRatio, yRatio);
         }
     }
 }
