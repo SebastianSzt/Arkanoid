@@ -220,6 +220,7 @@ namespace Arkanoid
             if (random.Next(0, 2) == 0)
             {
                 Bonus bonusBubble = new Bonus(originalPanelWidth, originalPanelHeight, random.Next(0, originalPanelWidth - 19), 0, 20, 20, Color.FromArgb(random.Next(256), random.Next(256), random.Next(256)), GamePaddle, gameBallList, specialBallList);
+                bonusBubble.ChangeSize(xRatio, yRatio);
                 bonusBubbleList.Add(bonusBubble);
             }
         }
@@ -239,6 +240,7 @@ namespace Arkanoid
             else if (randomNumber == 2)
             {
                 Ball specialBall = new Ball(0, 0, 0, 0, 10, 10, Color.FromArgb(102, 255, 153), 0, -5, GameGrid, GamePaddle);
+                specialBall.ChangeSize(xRatio, yRatio);
                 specialBall.PositionWithPaddle();
                 specialBallList.Add(specialBall);
             }
@@ -258,12 +260,12 @@ namespace Arkanoid
                 int ballNumber = random.Next(0, gameBallList.Count);
                 int randomDirectionVX = random.Next(2) == 0 ? -1 : 1;
                 int randomDirectionVY = random.Next(2) == 0 ? -1 : 1;
-                Ball nextBall = new Ball(originalPanelWidth, originalPanelHeight, gameBallList[ballNumber].BallPosX, gameBallList[ballNumber].BallPosY, gameBallList[ballNumber].BallWidth, gameBallList[ballNumber].BallHeight, Color.White, randomDirectionVX * random.Next(2, 4), randomDirectionVY * gameBallList[ballNumber].BallVY, GameGrid, GamePaddle);
+                Ball nextBall = new Ball((int)Math.Round(originalPanelWidth * xRatio), (int)Math.Round(originalPanelHeight * yRatio), gameBallList[ballNumber].BallPosX, gameBallList[ballNumber].BallPosY, gameBallList[ballNumber].BallWidth, gameBallList[ballNumber].BallHeight, Color.White, randomDirectionVX * random.Next((int)Math.Round(2 * xRatio), (int)Math.Round(4 * xRatio)), randomDirectionVY * gameBallList[ballNumber].BallVY, GameGrid, GamePaddle);
                 nextBall.ChangeRatio(xRatio, yRatio);
                 gameBallList.Add(nextBall);
                 randomDirectionVX = random.Next(2) == 0 ? -1 : 1;
                 randomDirectionVY = random.Next(2) == 0 ? -1 : 1;
-                nextBall = new Ball(originalPanelWidth, originalPanelHeight, gameBallList[ballNumber].BallPosX, gameBallList[ballNumber].BallPosY, gameBallList[ballNumber].BallWidth, gameBallList[ballNumber].BallHeight, Color.White, randomDirectionVX * random.Next(2, 4), randomDirectionVY * gameBallList[ballNumber].BallVY, GameGrid, GamePaddle);
+                nextBall = new Ball((int)Math.Round(originalPanelWidth * xRatio), (int)Math.Round(originalPanelHeight * yRatio), gameBallList[ballNumber].BallPosX, gameBallList[ballNumber].BallPosY, gameBallList[ballNumber].BallWidth, gameBallList[ballNumber].BallHeight, Color.White, randomDirectionVX * random.Next((int)Math.Round(2 * xRatio), (int)Math.Round(4 * xRatio)), randomDirectionVY * gameBallList[ballNumber].BallVY, GameGrid, GamePaddle);
                 nextBall.ChangeRatio(xRatio, yRatio);
                 gameBallList.Add(nextBall);
             }
